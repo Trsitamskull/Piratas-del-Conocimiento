@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Piratas del Conocimiento</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏴‍☠️</text></svg>"
+    />
+  </head>
+  <body>
+    <div id="game-container">
+      <!-- Screens (one per game state) -->
+      <div id="screen-menu" class="screen"></div>
+      <div id="screen-worldmap" class="screen"></div>
+      <div id="screen-island1" class="screen"></div>
+      <div id="screen-island2" class="screen"></div>
+      <div id="screen-island3" class="screen"></div>
+      <div id="screen-island4" class="screen"></div>
+      <div id="screen-island5" class="screen"></div>
+      <div id="screen-treasure" class="screen"></div>
+
+      <!-- Dialog box (always present) -->
+      <div id="dialog-box" class="dialog-box">
+        <div class="dialog-name"></div>
+        <div class="dialog-text"></div>
+        <div class="dialog-continue">▼</div>
+      </div>
+
+      <!-- Transition overlay -->
+      <div id="transition-overlay"></div>
+    </div>
+
+    <script src="game.js"></script>
+    <script src="screens.js"></script>
+  </body>
+</html>

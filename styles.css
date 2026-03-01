@@ -1,0 +1,1159 @@
+/* ============================================================
+   PIRATAS DEL CONOCIMIENTO - Web Version
+   Estilos globales del juego
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lora:ital,wght@0,400;0,700;1,400&family=Pirata+One&display=swap");
+
+/* === RESET / BASE === */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --gold: #ffd700;
+  --gold-dark: #c8a200;
+  --gold-light: #ffe44d;
+  --ocean-dark: #0d2647;
+  --ocean-mid: #143a6e;
+  --ocean-light: #1a5276;
+  --wood-dark: #2a1506;
+  --wood-mid: #4a2a10;
+  --wood-light: #6b3d1a;
+  --parchment: #e8d5a3;
+  --parchment-dark: #c4a96a;
+  --text-light: #f0e6d0;
+  --text-dim: #8a9ab5;
+  --danger: #e74c3c;
+  --success: #2ecc71;
+  --warning: #f39c12;
+  --panel-bg: rgba(10, 15, 30, 0.92);
+  --border-gold: 2px solid var(--gold);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow-gold: 0 0 20px rgba(255, 215, 0, 0.3);
+  --shadow-dark: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --transition: all 0.3s ease;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: "Lora", Georgia, serif;
+  background: #000;
+  color: var(--text-light);
+}
+
+#game-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  max-width: 1280px;
+  max-height: 720px;
+  margin: auto;
+  /* Center vertically & horizontally */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 4px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+}
+
+/* === SCREEN BASE === */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.screen.active {
+  display: flex;
+}
+
+/* === TRANSITIONS === */
+#transition-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+#transition-overlay.fade-out {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* === BACKGROUNDS === */
+.bg-ocean {
+  background: linear-gradient(
+    180deg,
+    #061428 0%,
+    var(--ocean-dark) 30%,
+    var(--ocean-mid) 60%,
+    #1a5276 100%
+  );
+}
+
+.bg-island-green {
+  background: linear-gradient(
+    180deg,
+    #6a9bd4 0%,
+    #6a9bd4 25%,
+    #3a6b3a 25%,
+    #2d5a2d 100%
+  );
+}
+
+.bg-cave {
+  background: linear-gradient(180deg, #1a1520 0%, #15101b 50%, #0f0c15 100%);
+}
+
+.bg-night {
+  background: linear-gradient(180deg, #0a0c20 0%, #0f1530 40%, #0a1830 100%);
+}
+
+.bg-fortress {
+  background: linear-gradient(
+    180deg,
+    #8a6a45 0%,
+    #8a6a45 25%,
+    #3d3020 25%,
+    #2a2015 100%
+  );
+}
+
+.bg-tavern {
+  background: linear-gradient(180deg, #3d2515 0%, #30180c 50%, #251008 100%);
+}
+
+.bg-treasure {
+  background: radial-gradient(
+    ellipse at center,
+    #1a1508 0%,
+    #0f0a08 50%,
+    #050305 100%
+  );
+}
+
+/* === STARS / PARTICLES (CSS) === */
+.stars-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.star-particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: var(--gold-light);
+  border-radius: 50%;
+  animation: twinkle var(--dur, 3s) ease-in-out infinite;
+  opacity: 0;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% {
+    opacity: var(--max-opacity, 0.7);
+    transform: scale(1.2);
+  }
+}
+
+.bubble-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: rgba(100, 180, 255, 0.3);
+  border-radius: 50%;
+  animation: bubbleUp var(--dur, 5s) ease-in-out infinite;
+  bottom: -10px;
+}
+
+@keyframes bubbleUp {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.4;
+  }
+  90% {
+    opacity: 0.2;
+  }
+  100% {
+    transform: translateY(-720px) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* === WAVE ANIMATION === */
+.wave-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(20, 60, 120, 0.3);
+  animation: waveDrift 4s ease-in-out infinite alternate;
+}
+
+@keyframes waveDrift {
+  0% {
+    transform: translateX(-5px);
+  }
+  100% {
+    transform: translateX(5px);
+  }
+}
+
+/* === GOLDEN TITLE === */
+.title-pirate {
+  font-family: "Pirata One", "Cinzel", serif;
+  font-size: 3.5rem;
+  text-align: center;
+  color: var(--gold);
+  text-shadow:
+    0 0 10px rgba(255, 215, 0, 0.5),
+    0 0 30px rgba(255, 215, 0, 0.2),
+    3px 3px 0 rgba(80, 40, 0, 0.8);
+  animation: titleShine 3s ease-in-out infinite;
+  line-height: 1.2;
+}
+
+@keyframes titleShine {
+  0%,
+  100% {
+    text-shadow:
+      0 0 10px rgba(255, 215, 0, 0.5),
+      0 0 30px rgba(255, 215, 0, 0.2),
+      3px 3px 0 rgba(80, 40, 0, 0.8);
+  }
+  50% {
+    text-shadow:
+      0 0 20px rgba(255, 215, 0, 0.8),
+      0 0 50px rgba(255, 215, 0, 0.4),
+      3px 3px 0 rgba(80, 40, 0, 0.8);
+  }
+}
+
+.title-deco {
+  font-size: 2.5rem;
+  text-align: center;
+  color: var(--gold);
+  animation: decoSwing 4s ease-in-out infinite;
+}
+
+@keyframes decoSwing {
+  0%,
+  100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+.subtitle {
+  font-family: "Lora", serif;
+  font-style: italic;
+  font-size: 1.3rem;
+  text-align: center;
+  color: var(--parchment-dark);
+  margin-top: 0.3rem;
+}
+
+/* === BUTTONS === */
+.btn-pirate {
+  display: block;
+  width: 380px;
+  max-width: 90%;
+  margin: 0.4rem auto;
+  padding: 0.8rem 1.5rem;
+  font-family: "Cinzel", serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  border: var(--border-gold);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(20px) scale(0.9);
+  animation: btnAppear 0.5s ease-out forwards;
+}
+
+.btn-pirate::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%
+  );
+  pointer-events: none;
+}
+
+.btn-pirate:hover {
+  transform: scale(1.06);
+  box-shadow: var(--shadow-gold);
+  filter: brightness(1.2);
+}
+
+.btn-pirate:active {
+  transform: scale(0.97);
+  filter: brightness(0.9);
+}
+
+@keyframes btnAppear {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.btn-teal {
+  background: linear-gradient(135deg, #1a6b7a, #0e4d5a);
+}
+.btn-green {
+  background: linear-gradient(135deg, #2d8a2d, #1a6b1a);
+}
+.btn-blue {
+  background: linear-gradient(135deg, #2a5a9e, #1a3d70);
+}
+.btn-red {
+  background: linear-gradient(135deg, #8e2020, #6b1515);
+}
+.btn-purple {
+  background: linear-gradient(135deg, #5a3a8a, #40286a);
+}
+.btn-gold {
+  background: linear-gradient(135deg, #9a8000, #7a6500);
+}
+.btn-brown {
+  background: linear-gradient(135deg, #6a4a1a, #4a3010);
+}
+
+.btn-small {
+  width: auto;
+  padding: 0.5rem 1.5rem;
+  font-size: 0.9rem;
+}
+
+/* === PANELS / CARDS === */
+.panel-dark {
+  background: var(--panel-bg);
+  border: var(--border-gold);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-dark);
+  padding: 1.5rem;
+}
+
+.panel-parchment {
+  background: linear-gradient(135deg, #e8d5a3, #d4c090);
+  border: 3px solid #8a6a30;
+  border-radius: var(--radius-sm);
+  color: #3a2a10;
+  padding: 1.5rem;
+  box-shadow:
+    var(--shadow-dark),
+    inset 0 0 30px rgba(0, 0, 0, 0.1);
+}
+
+/* === DIALOG BOX === */
+.dialog-box {
+  position: absolute;
+  bottom: 3%;
+  left: 3%;
+  right: 3%;
+  background: rgba(10, 12, 20, 0.94);
+  border: 3px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 1rem 1.2rem;
+  z-index: 100;
+  display: none;
+  animation: dialogSlideUp 0.3s ease-out;
+  box-shadow:
+    0 -4px 20px rgba(0, 0, 0, 0.5),
+    var(--shadow-gold);
+}
+
+.dialog-box.visible {
+  display: block;
+}
+
+@keyframes dialogSlideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.dialog-name {
+  font-family: "Cinzel", serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--gold);
+  margin-bottom: 0.4rem;
+}
+
+.dialog-text {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #fff;
+  min-height: 2.5rem;
+}
+
+.dialog-continue {
+  position: absolute;
+  bottom: 8px;
+  right: 15px;
+  color: var(--gold);
+  font-size: 1rem;
+  animation: blink 1s ease-in-out infinite;
+  display: none;
+}
+
+.dialog-continue.visible {
+  display: block;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* === ISLAND TITLE BAR === */
+.island-title-bar {
+  background: rgba(15, 10, 5, 0.88);
+  border-bottom: 2px solid var(--gold);
+  padding: 0.6rem 1rem;
+  text-align: center;
+  font-family: "Cinzel", serif;
+  font-size: 1.15rem;
+  color: var(--gold);
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+/* === FEEDBACK LABEL === */
+.feedback {
+  text-align: center;
+  font-size: 1.05rem;
+  padding: 0.5rem;
+  min-height: 2rem;
+  transition: var(--transition);
+}
+
+.feedback.correct {
+  color: var(--success);
+}
+.feedback.wrong {
+  color: var(--danger);
+}
+.feedback.info {
+  color: var(--warning);
+}
+.feedback.gold {
+  color: var(--gold);
+}
+
+/* === SCREEN SHAKE === */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translate(0);
+  }
+  10% {
+    transform: translate(-6px, 3px);
+  }
+  20% {
+    transform: translate(5px, -4px);
+  }
+  30% {
+    transform: translate(-4px, 2px);
+  }
+  40% {
+    transform: translate(3px, -3px);
+  }
+  50% {
+    transform: translate(-2px, 1px);
+  }
+  60% {
+    transform: translate(2px, -1px);
+  }
+}
+
+.shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+/* === OVERLAY / MODAL === */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(3px);
+}
+
+.overlay.active {
+  display: flex;
+}
+
+.modal {
+  width: 85%;
+  max-width: 900px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+/* === SCROLLBAR === */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--gold-dark);
+  border-radius: 4px;
+}
+
+/* === WORLD MAP === */
+.map-header {
+  background: rgba(15, 10, 5, 0.88);
+  border-bottom: 2px solid var(--gold);
+  padding: 0.5rem 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.map-header h2 {
+  font-family: "Cinzel", serif;
+  font-size: 1.2rem;
+  color: var(--gold);
+}
+
+.map-fragments {
+  font-family: "Cinzel", serif;
+  font-size: 1rem;
+  color: var(--gold);
+}
+
+.island-node {
+  position: absolute;
+  width: 110px;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition);
+  animation: islandBob 2.5s ease-in-out infinite;
+}
+
+.island-node:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+@keyframes islandBob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.island-visual {
+  width: 90px;
+  height: 70px;
+  margin: 0 auto;
+  border-radius: 50% 50% 40% 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  transition: var(--transition);
+}
+
+.island-visual.completed {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark)) !important;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.island-visual.locked {
+  background: #3a3a3a !important;
+  opacity: 0.6;
+}
+
+.island-name {
+  font-size: 0.65rem;
+  margin-top: 4px;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  line-height: 1.2;
+}
+
+.island-stars {
+  font-size: 0.95rem;
+  color: var(--gold);
+  margin-top: 2px;
+}
+
+.path-dot {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(100, 100, 100, 0.4);
+}
+
+.path-dot.completed {
+  background: rgba(255, 215, 0, 0.6);
+}
+
+/* === ZONE BUTTONS (Island 1) === */
+.zone-btn {
+  flex: 1;
+  margin: 0 0.5rem;
+  padding: 1.5rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 2px solid rgba(60, 50, 30, 0.6);
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: center;
+  font-family: "Lora", serif;
+  font-size: 1.05rem;
+  color: #fff;
+  position: relative;
+}
+
+.zone-btn:hover {
+  border-color: var(--gold);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.zone-btn .zone-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.8rem;
+}
+
+.zone-btn.correct {
+  background: rgba(30, 140, 60, 0.8) !important;
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 20px rgba(46, 204, 113, 0.4);
+}
+
+.zone-btn.wrong {
+  background: rgba(150, 40, 40, 0.8) !important;
+  border-color: #e74c3c !important;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* === DROP ZONES (Island 2) === */
+.drop-zone {
+  flex: 1;
+  margin: 0 0.3rem;
+  padding: 0.8rem;
+  border-radius: var(--radius-sm);
+  border: 2px dashed rgba(180, 150, 80, 0.5);
+  min-height: 120px;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.drop-zone.drag-over {
+  border-color: var(--gold);
+  background: rgba(255, 215, 0, 0.1);
+  box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.15);
+}
+
+.drop-zone-title {
+  font-family: "Cinzel", serif;
+  font-size: 0.95rem;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+
+.drop-zone-counter {
+  font-size: 0.8rem;
+  color: var(--gold);
+  position: absolute;
+  top: 5px;
+  right: 8px;
+}
+
+.drag-item {
+  padding: 0.6rem 1rem;
+  background: rgba(40, 30, 50, 0.9);
+  border: 2px solid rgba(120, 100, 60, 0.6);
+  border-radius: 6px;
+  cursor: grab;
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s;
+  font-size: 0.9rem;
+  color: #fff;
+  user-select: none;
+  margin: 0.3rem;
+}
+
+.drag-item:hover {
+  border-color: var(--gold);
+  box-shadow: 0 2px 10px rgba(255, 215, 0, 0.2);
+}
+
+.drag-item.dragging {
+  opacity: 0.8;
+  cursor: grabbing;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+}
+
+.drag-item.placed {
+  background: rgba(20, 80, 40, 0.8);
+  border-color: var(--success);
+  cursor: default;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.6rem;
+}
+
+/* === LEVER BUTTONS (Island 3) === */
+.lever-btn {
+  flex: 1;
+  margin: 0 0.4rem;
+  padding: 1.2rem;
+  border-radius: var(--radius-sm);
+  border: 2px solid rgba(100, 100, 100, 0.5);
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: center;
+  font-family: "Cinzel", serif;
+  font-size: 1.3rem;
+  color: #fff;
+}
+
+.lever-btn:hover:not(.disabled) {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.lever-btn.correct {
+  background: rgba(30, 120, 50, 0.9) !important;
+  border-color: var(--gold) !important;
+}
+
+.lever-btn.wrong {
+  background: rgba(100, 30, 30, 0.8) !important;
+  border-color: #c0392b !important;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.lever-btn.disabled {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* === KEY ITEMS (Island 4) === */
+.key-item {
+  padding: 0.7rem 1rem;
+  background: rgba(80, 70, 30, 0.9);
+  border: 2px solid rgba(160, 140, 60, 0.7);
+  border-radius: 6px;
+  cursor: grab;
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s;
+  font-size: 0.85rem;
+  color: #fff;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.4rem 0;
+}
+
+.key-item:hover {
+  border-color: var(--gold);
+  box-shadow: 0 2px 10px rgba(255, 215, 0, 0.2);
+}
+
+.key-item .key-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.step-zone {
+  background: rgba(35, 30, 25, 0.8);
+  border: 2px dashed rgba(120, 100, 60, 0.5);
+  border-radius: 6px;
+  padding: 0.6rem;
+  min-height: 70px;
+  margin: 0.4rem 0;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.step-zone.drag-over {
+  border-color: var(--gold);
+  background: rgba(255, 215, 0, 0.08);
+}
+
+.step-zone .step-label {
+  font-family: "Cinzel", serif;
+  color: rgba(140, 120, 80, 0.7);
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.step-zone.correct {
+  background: rgba(20, 80, 30, 0.7) !important;
+  border-color: var(--success) !important;
+}
+
+.step-zone.wrong {
+  background: rgba(80, 20, 15, 0.7) !important;
+  border-color: var(--danger) !important;
+  animation: shake 0.3s;
+}
+
+/* === PIRATE CARDS (Island 5) === */
+.pirate-card {
+  flex: 1;
+  margin: 0 0.3rem;
+  padding: 0.7rem;
+  border-radius: var(--radius-sm);
+  border: 2px solid rgba(120, 100, 60, 0.5);
+  text-align: center;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 250px;
+}
+
+.pirate-card.convinced {
+  border-color: var(--success) !important;
+  background: rgba(20, 80, 30, 0.7) !important;
+}
+
+.pirate-icon {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  margin-bottom: 0.3rem;
+}
+
+.pirate-icon-emoji {
+  font-size: 2.8rem;
+  margin-bottom: 0.3rem;
+}
+
+.pirate-name {
+  font-family: "Cinzel", serif;
+  font-size: 0.85rem;
+  color: var(--gold);
+  margin-bottom: 0.3rem;
+}
+
+.pirate-complaint {
+  font-size: 0.85rem;
+  color: rgba(255, 230, 200, 0.9);
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  line-height: 1.3;
+}
+
+.pirate-talk-btn {
+  margin-top: 0.4rem;
+  padding: 0.4rem 1rem;
+  background: rgba(60, 55, 30, 0.8);
+  border: 1px solid rgba(120, 100, 60, 0.6);
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: var(--transition);
+}
+
+.pirate-talk-btn:hover {
+  background: rgba(80, 75, 40, 0.9);
+  border-color: var(--gold);
+}
+
+.pirate-talk-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.option-btn {
+  display: block;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  margin: 0.3rem 0;
+  background: rgba(40, 35, 25, 0.9);
+  border: 1px solid rgba(100, 80, 50, 0.5);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.9rem;
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition);
+  line-height: 1.3;
+}
+
+.option-btn:hover {
+  background: rgba(60, 50, 30, 0.9);
+  border-color: var(--gold);
+}
+
+/* === TREASURE SCREEN === */
+.chest-container {
+  position: relative;
+  cursor: pointer;
+  transition: var(--transition);
+  animation: chestPulse 2s ease-in-out infinite;
+}
+
+@keyframes chestPulse {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.15);
+  }
+}
+
+.chest-container:hover {
+  transform: scale(1.05);
+}
+
+.chest-img {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+}
+
+.golden-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 220, 50, 0.7) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  pointer-events: none;
+  animation: flash 1s ease-out forwards;
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* === FARO (Island 3) === */
+.faro-container {
+  text-align: center;
+  position: relative;
+}
+
+.faro-img {
+  width: 100px;
+  height: auto;
+  transition: filter 0.5s;
+}
+
+.faro-light-beam {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 240, 80, 0.6) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.8s;
+}
+
+.faro-light-beam.on {
+  opacity: 1;
+  animation: lightPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes lightPulse {
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateX(-50%) scale(1.3);
+    opacity: 1;
+  }
+}
+
+/* === CATALEJO (Island 1) === */
+.catalejo-cursor {
+  position: absolute;
+  pointer-events: none;
+  width: 55px;
+  height: 55px;
+  z-index: 50;
+  transition: none;
+}
+
+/* === DOOR (Island 4) === */
+.door-visual {
+  width: 120px;
+  height: 180px;
+  background: linear-gradient(180deg, #3a1a05, #2a0f02);
+  border: 3px solid rgba(120, 100, 60, 0.6);
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  position: relative;
+  transition: var(--transition);
+}
+
+.door-visual.open {
+  background: linear-gradient(180deg, #1a4a1a, #0f300f);
+  border-color: var(--success);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
+  .title-pirate {
+    font-size: 2.5rem;
+  }
+  .subtitle {
+    font-size: 1rem;
+  }
+  .btn-pirate {
+    width: 300px;
+    font-size: 0.95rem;
+    padding: 0.6rem 1rem;
+  }
+  .island-node {
+    width: 85px;
+  }
+  .island-visual {
+    width: 70px;
+    height: 55px;
+    font-size: 1.4rem;
+  }
+  .island-name {
+    font-size: 0.55rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .title-pirate {
+    font-size: 1.8rem;
+  }
+  .btn-pirate {
+    width: 260px;
+    font-size: 0.85rem;
+  }
+}
+
+/* === UTILITY === */
+.hidden {
+  display: none !important;
+}
+.text-gold {
+  color: var(--gold);
+}
+.text-center {
+  text-align: center;
+}
+.mt-1 {
+  margin-top: 0.5rem;
+}
+.mt-2 {
+  margin-top: 1rem;
+}
+.mb-1 {
+  margin-bottom: 0.5rem;
+}
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.flex-col {
+  flex-direction: column;
+}
+.gap-1 {
+  gap: 0.5rem;
+}
+.gap-2 {
+  gap: 1rem;
+}
