@@ -98,47 +98,68 @@ body {
 
 /* === BACKGROUNDS === */
 .bg-ocean {
-  background: url('assets/backgrounds/bg_worldmap.png') center/cover no-repeat,
-    linear-gradient(180deg, #061428 0%, var(--ocean-dark) 30%, var(--ocean-mid) 60%, #1a5276 100%);
+  background:
+    url("assets/backgrounds/bg_worldmap.png") center/cover no-repeat,
+    linear-gradient(
+      180deg,
+      #061428 0%,
+      var(--ocean-dark) 30%,
+      var(--ocean-mid) 60%,
+      #1a5276 100%
+    );
 }
 
 .bg-menu {
-  background: url('assets/backgrounds/bg_menu.png') center/cover no-repeat,
-    linear-gradient(180deg, #061428 0%, var(--ocean-dark) 30%, var(--ocean-mid) 60%, #1a5276 100%);
+  background:
+    url("assets/backgrounds/bg_menu.png") center/cover no-repeat,
+    linear-gradient(
+      180deg,
+      #061428 0%,
+      var(--ocean-dark) 30%,
+      var(--ocean-mid) 60%,
+      #1a5276 100%
+    );
 }
 
 .bg-island-green {
-  background: url('assets/backgrounds/bg_island1.png') center/cover no-repeat,
+  background:
+    url("assets/backgrounds/bg_island1.png") center/cover no-repeat,
     linear-gradient(180deg, #6a9bd4 0%, #6a9bd4 25%, #3a6b3a 25%, #2d5a2d 100%);
 }
 
 .bg-island2 {
-  background: url('assets/backgrounds/bg_island2.png') center/cover no-repeat,
+  background:
+    url("assets/backgrounds/bg_island2.png") center/cover no-repeat,
     linear-gradient(180deg, #1a1520 0%, #15101b 50%, #0f0c15 100%);
 }
 
 .bg-cave {
-  background: url('assets/backgrounds/bg_island2.png') center/cover no-repeat,
+  background:
+    url("assets/backgrounds/bg_island2.png") center/cover no-repeat,
     linear-gradient(180deg, #1a1520 0%, #15101b 50%, #0f0c15 100%);
 }
 
 .bg-night {
-  background: url('assets/backgrounds/bg_island3.png') center/cover no-repeat,
+  background:
+    url("assets/backgrounds/bg_island3.png") center/cover no-repeat,
     linear-gradient(180deg, #0a0c20 0%, #0f1530 40%, #0a1830 100%);
 }
 
 .bg-fortress {
-  background: url('assets/backgrounds/bg_island4.png') center/cover no-repeat,
+  background:
+    url("assets/backgrounds/bg_island4.png") center/cover no-repeat,
     linear-gradient(180deg, #8a6a45 0%, #8a6a45 25%, #3d3020 25%, #2a2015 100%);
 }
 
 .bg-tavern {
-  background: url('assets/backgrounds/bg_island5.png') center/cover no-repeat,
+  background:
+    url("assets/backgrounds/bg_island5.png") center/cover no-repeat,
     linear-gradient(180deg, #3d2515 0%, #30180c 50%, #251008 100%);
 }
 
 .bg-treasure {
-  background: url('assets/backgrounds/bg_treasure.png') center/cover no-repeat,
+  background:
+    url("assets/backgrounds/bg_treasure.png") center/cover no-repeat,
     radial-gradient(ellipse at center, #1a1508 0%, #0f0a08 50%, #050305 100%);
 }
 
@@ -384,7 +405,7 @@ body {
   background: rgba(10, 12, 20, 0.94);
   border: 3px solid var(--gold);
   border-radius: var(--radius);
-  border-image: url('assets/ui/dialog_frame.png') 20 stretch;
+  border-image: url("assets/ui/dialog_frame.png") 20 stretch;
   padding: 1rem 1.2rem;
   z-index: 100;
   display: none;
@@ -1187,7 +1208,7 @@ body {
   height: 64px;
   object-fit: contain;
   margin-bottom: -5px;
-  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
 }
 
 /* === MUTE BUTTON === */
@@ -1196,7 +1217,7 @@ body {
   top: 8px;
   right: 8px;
   z-index: 50;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   border: 1px solid var(--gold);
   border-radius: 50%;
   width: 36px;
@@ -1210,13 +1231,13 @@ body {
 }
 
 .mute-btn:hover {
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.8);
   transform: scale(1.1);
 }
 
 /* === PERGAMINO PANEL (Instructions overlay) === */
 .panel-pergamino {
-  background: url('assets/ui/pergamino_panel.png') center/cover no-repeat;
+  background: url("assets/ui/pergamino_panel.png") center/cover no-repeat;
   border: 3px solid #8a6a30;
   border-radius: var(--radius-sm);
   color: #3a2a10;

@@ -257,7 +257,12 @@ ScreenManager.register("worldmap", (container) => {
     const islandImg = el("img", {
       src: `assets/objects/island_${i + 1}.png`,
       alt: `Isla ${i + 1}`,
-      style: { width: "100%", height: "100%", objectFit: "contain", imageRendering: "pixelated" },
+      style: {
+        width: "100%",
+        height: "100%",
+        objectFit: "contain",
+        imageRendering: "pixelated",
+      },
     });
     visual.appendChild(islandImg);
 
@@ -551,7 +556,12 @@ ScreenManager.register("island2", (container) => {
   ];
 
   const zoneDefs = [
-    { id: "causas", name: "Causas", color: "rgba(100,60,20,0.6)", img: "assets/objects/cofre_causas.png" },
+    {
+      id: "causas",
+      name: "Causas",
+      color: "rgba(100,60,20,0.6)",
+      img: "assets/objects/cofre_causas.png",
+    },
     {
       id: "problema",
       name: "Problema Central",
@@ -620,7 +630,13 @@ ScreenManager.register("island2", (container) => {
       el("img", {
         src: zd.img,
         alt: zd.name,
-        style: { width: "50px", height: "50px", objectFit: "contain", imageRendering: "pixelated", marginBottom: "0.3rem" },
+        style: {
+          width: "50px",
+          height: "50px",
+          objectFit: "contain",
+          imageRendering: "pixelated",
+          marginBottom: "0.3rem",
+        },
       }),
     );
     zone.appendChild(
