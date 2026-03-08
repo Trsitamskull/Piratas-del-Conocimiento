@@ -115,7 +115,7 @@ function showInstructions(parent) {
   const modal = el("div", { className: "modal panel-dark" });
   modal.innerHTML = `
     <h2 style="font-family:'Cinzel',serif;color:var(--gold);text-align:center;margin-bottom:1rem;">📜 Instrucciones</h2>
-    <p style="margin-bottom:0.8rem;">Eres un pirata investigador que debe completar 5 islas para encontrar el tesoro del conocimiento.</p>
+    <p style="margin-bottom:0.8rem;">Eres un pirata investigador que debe completar 5 islas para encontrar el tesoro del conocimiento. <em style="color:var(--gold);">Todo el contenido se adapta al tema que elijas en la primera isla.</em></p>
     <div style="margin-bottom:0.5rem;">
       <strong style="color:var(--gold);">🧭 Isla 1 – La Brújula de Barbanegra (Título):</strong>
       <span>Elige un tema, clasifica las palabras en cofres (Fenómeno, Tema, Población) y construye tu título de investigación.</span>
@@ -736,7 +736,7 @@ ScreenManager.register("island1", (container) => {
   ]);
 });
 
-/* ======================== ISLAND 2 – Árbol (Problem) ======================== */
+/* ======================== ISLAND 2 – Cueva de los Condenados (Problem) ======================== */
 ScreenManager.register("island2", (container) => {
   container.className = "screen active bg-cave";
   AudioManager.playMusic("island");
@@ -744,7 +744,8 @@ ScreenManager.register("island2", (container) => {
   container.appendChild(
     el("div", {
       className: "island-title-bar",
-      textContent: "💀 Cueva de los Condenados – Clasifica el Problema de Investigación",
+      textContent:
+        "💀 Cueva de los Condenados – Clasifica el Problema de Investigación",
     }),
   );
 
@@ -759,21 +760,39 @@ ScreenManager.register("island2", (container) => {
     },
   });
 
-  const feedback = el("div", {
-    className: "feedback info",
-    textContent: "Arrastra cada frase a la categoría correcta",
-  });
+  const feedback = el("div", { className: "feedback info" });
   content.appendChild(feedback);
 
-  // Items data
-  const items = [
-    { text: "Falta de educación ambiental", zone: "causas" },
-    { text: "Uso excesivo de plástico", zone: "causas" },
-    { text: "Alta concentración de plástico", zone: "problema" },
-    { text: "Ingesta de microplásticos", zone: "problema" },
-    { text: "Peces muriendo", zone: "consecuencias" },
-    { text: "Daño al ecosistema", zone: "consecuencias" },
-  ];
+  // Load theme from Island 1
+  const themeName = GameProgress.selected_theme;
+  const themeData = themeName ? getThemeByName(themeName) : null;
+
+  if (!themeData || !themeData.problema) {
+    feedback.className = "feedback wrong";
+    feedback.textContent =
+      "⚠️ Primero debes completar la Isla 1 para elegir un tema.";
+    content.appendChild(
+      el("button", {
+        className: "btn-pirate btn-small btn-gold",
+        textContent: "← Ir a la Isla 1",
+        style: {
+          animation: "none",
+          opacity: "1",
+          transform: "none",
+          width: "auto",
+          margin: "1rem auto",
+        },
+        onClick: () => ScreenManager.show("island1"),
+      }),
+    );
+    container.appendChild(content);
+    return;
+  }
+
+  feedback.textContent = `Tema: "${themeName}" — Arrastra cada frase a la categoría correcta`;
+
+  // Items data from theme
+  const items = themeData.problema.items;
 
   const zoneDefs = [
     {
@@ -845,7 +864,6 @@ ScreenManager.register("island2", (container) => {
       className: "drop-zone",
       style: { background: zd.color, position: "relative" },
     });
-    // Chest image for zone
     zone.appendChild(
       el("img", {
         src: zd.img,
@@ -900,7 +918,6 @@ ScreenManager.register("island2", (container) => {
       return;
     }
     if (data.zone === targetZone) {
-      // Correct
       placed[targetZone].push(data.text);
       totalPlaced++;
       counter.textContent = `${placed[targetZone].length}/${maxPerZone}`;
@@ -911,8 +928,9 @@ ScreenManager.register("island2", (container) => {
       });
       itemsContainer.appendChild(placedEl);
 
-      // Remove from drag area
-      const orig = dragArea.querySelector(`[data-text="${data.text}"]`);
+      const orig = dragArea.querySelector(
+        `[data-text="${CSS.escape(data.text)}"]`,
+      );
       if (orig) orig.remove();
 
       feedback.className = "feedback correct";
@@ -923,7 +941,6 @@ ScreenManager.register("island2", (container) => {
         handleIsland2Complete();
       }
     } else {
-      // Wrong
       GameProgress.record_error(1);
       screenShake();
       AudioManager.playSFX("wrong");
@@ -934,19 +951,20 @@ ScreenManager.register("island2", (container) => {
 
   function handleIsland2Complete() {
     feedback.className = "feedback gold";
-    feedback.textContent = "🌳✨ ¡Árbol del conocimiento completo!";
+    feedback.textContent =
+      "💀✨ ¡Problema de investigación clasificado correctamente!";
     Dialog.showSequence(
       [
         {
-          name: "🦉 Sabio Búho",
-          text: "¡Excelente trabajo clasificando el problema de investigación!",
+          name: "💀 Guardián de la Cueva",
+          text: `¡Excelente trabajo clasificando el problema sobre "${themeName}"!`,
         },
         {
-          name: "🦉 Sabio Búho",
+          name: "💀 Guardián de la Cueva",
           text: "Todo problema tiene CAUSAS que lo originan, un PROBLEMA CENTRAL que describes, y CONSECUENCIAS que genera.",
         },
         {
-          name: "🦉 Sabio Búho",
+          name: "💀 Guardián de la Cueva",
           text: "Comprender esta estructura te ayudará a plantear mejor tu investigación. ¡Segundo fragmento obtenido!",
         },
       ],
@@ -982,21 +1000,21 @@ ScreenManager.register("island2", (container) => {
 
   Dialog.showSequence([
     {
-      name: "🦉 Sabio Búho",
-      text: "¡Bienvenido a la Isla del Árbol, joven investigador!",
+      name: "💀 Guardián de la Cueva",
+      text: "¡Bienvenido a la Cueva de los Condenados, joven investigador!",
     },
     {
-      name: "🦉 Sabio Búho",
-      text: "El árbol del conocimiento tiene tres raíces: Causas, Problema y Consecuencias.",
+      name: "💀 Guardián de la Cueva",
+      text: `El tema es "${themeName}". Debes clasificar las frases según sean Causas, Problema Central o Consecuencias.`,
     },
     {
-      name: "🦉 Sabio Búho",
-      text: "Arrastra cada frase a la categoría correcta. ¡El tema es la contaminación plástica en los océanos!",
+      name: "💀 Guardián de la Cueva",
+      text: "Arrastra cada frase a la categoría correcta. ¡Piensa con cuidado!",
     },
   ]);
 });
 
-/* ======================== ISLAND 3 – Faro (Research Question) ======================== */
+/* ======================== ISLAND 3 – Ojo del Kraken (Research Question) ======================== */
 ScreenManager.register("island3", (container) => {
   container.className = "screen active bg-night";
   createStars(container, 30);
@@ -1005,7 +1023,7 @@ ScreenManager.register("island3", (container) => {
   container.appendChild(
     el("div", {
       className: "island-title-bar",
-      textContent: "� Ojo del Kraken – Formula la Pregunta de Investigación",
+      textContent: "🐙 Ojo del Kraken – Formula la Pregunta de Investigación",
     }),
   );
 
@@ -1020,6 +1038,34 @@ ScreenManager.register("island3", (container) => {
       position: "relative",
     },
   });
+
+  // Load theme from Island 1
+  const themeName = GameProgress.selected_theme;
+  const themeData = themeName ? getThemeByName(themeName) : null;
+
+  if (!themeData || !themeData.pregunta) {
+    const feedback0 = el("div", {
+      className: "feedback wrong",
+      textContent: "⚠️ Primero debes completar la Isla 1 para elegir un tema.",
+    });
+    content.appendChild(feedback0);
+    content.appendChild(
+      el("button", {
+        className: "btn-pirate btn-small btn-gold",
+        textContent: "← Ir a la Isla 1",
+        style: {
+          animation: "none",
+          opacity: "1",
+          transform: "none",
+          width: "auto",
+          margin: "1rem auto",
+        },
+        onClick: () => ScreenManager.show("island1"),
+      }),
+    );
+    container.appendChild(content);
+    return;
+  }
 
   // Lighthouse
   const faroContainer = el("div", {
@@ -1038,7 +1084,7 @@ ScreenManager.register("island3", (container) => {
 
   const feedback = el("div", {
     className: "feedback info",
-    textContent: "Elige la palanca correcta para encender el faro",
+    textContent: `Tema: "${themeName}" — Elige la palanca correcta para encender el faro`,
   });
   content.appendChild(feedback);
 
@@ -1054,28 +1100,20 @@ ScreenManager.register("island3", (container) => {
   });
   content.appendChild(questionDisplay);
 
-  // Lever data
-  const levers = [
-    {
-      label: "¿Cuánto?",
-      question: "¿Cuánto plástico hay en los océanos?",
-      correct: false,
-      bg: "linear-gradient(135deg, #3a2a5a, #25183a)",
-    },
-    {
-      label: "¿Por qué?",
-      question:
-        "¿Por qué los plásticos afectan a las especies marinas de la costa colombiana?",
-      correct: true,
-      bg: "linear-gradient(135deg, #2a4a3a, #183025)",
-    },
-    {
-      label: "¿Cómo?",
-      question: "¿Cómo se recicla el plástico?",
-      correct: false,
-      bg: "linear-gradient(135deg, #4a3a2a, #30251a)",
-    },
+  // Lever data from theme
+  const bgs = [
+    "linear-gradient(135deg, #3a2a5a, #25183a)",
+    "linear-gradient(135deg, #2a4a3a, #183025)",
+    "linear-gradient(135deg, #4a3a2a, #30251a)",
   ];
+  const levers = shuffle(
+    themeData.pregunta.opciones.map((op, i) => ({
+      label: op.label,
+      question: op.question,
+      correct: op.correct,
+      bg: bgs[i],
+    })),
+  );
 
   const leversRow = el("div", {
     style: {
@@ -1116,22 +1154,21 @@ ScreenManager.register("island3", (container) => {
         questionDisplay.textContent = lv.question;
         AudioManager.playSFX("correct");
 
-        // Light up
         faroImg.src = "assets/sprites/objects/faro_encendido.png";
         lightBeam.classList.add("on");
 
         Dialog.showSequence(
           [
             {
-              name: "💡 Guardafaro",
+              name: "🐙 Ojo del Kraken",
               text: "¡El faro se ha encendido con la pregunta correcta!",
             },
             {
-              name: "💡 Guardafaro",
+              name: "🐙 Ojo del Kraken",
               text: `La pregunta de investigación es: "${lv.question}"`,
             },
             {
-              name: "💡 Guardafaro",
+              name: "🐙 Ojo del Kraken",
               text: "Una buena pregunta de investigación debe ser específica, medible y relacionada directamente con el problema planteado. ¡Tercer fragmento obtenido!",
             },
           ],
@@ -1151,7 +1188,6 @@ ScreenManager.register("island3", (container) => {
           "✖ Esa pregunta es demasiado general o no se relaciona con el problema.";
         questionDisplay.textContent = "";
 
-        // Flicker red
         faroImg.style.filter = "brightness(0.5) sepia(1) hue-rotate(-30deg)";
         setTimeout(() => {
           faroImg.style.filter = "";
@@ -1187,21 +1223,20 @@ ScreenManager.register("island3", (container) => {
 
   Dialog.showSequence([
     {
-      name: "💡 Guardafaro",
+      name: "🐙 Ojo del Kraken",
       text: "¡Marinero, el faro está apagado y los barcos no pueden navegar!",
     },
     {
-      name: "💡 Guardafaro",
-      text: "Solo la pregunta de investigación correcta puede encenderlo.",
+      name: "🐙 Ojo del Kraken",
+      text: `El tema es "${themeName}". Solo la pregunta de investigación correcta puede encender el faro.`,
     },
     {
-      name: "💡 Guardafaro",
+      name: "🐙 Ojo del Kraken",
       text: "Pasa el cursor sobre cada palanca para ver la pregunta, luego elige la correcta.",
     },
   ]);
 });
-
-/* ======================== ISLAND 4 – Escalera (Objectives) ======================== */
+/* ======================== ISLAND 4 – Peldaños Malditos (Objectives) ======================== */
 ScreenManager.register("island4", (container) => {
   container.className = "screen active bg-fortress";
   AudioManager.playMusic("island");
@@ -1223,6 +1258,39 @@ ScreenManager.register("island4", (container) => {
     },
   });
 
+  // Load theme from Island 1
+  const themeName = GameProgress.selected_theme;
+  const themeData = themeName ? getThemeByName(themeName) : null;
+
+  if (!themeData || !themeData.objetivos) {
+    const leftPanel = el("div", {
+      style: { flex: "1", display: "flex", flexDirection: "column", gap: "0.5rem" },
+    });
+    leftPanel.appendChild(
+      el("div", {
+        className: "feedback wrong",
+        textContent: "⚠️ Primero debes completar la Isla 1 para elegir un tema.",
+      }),
+    );
+    leftPanel.appendChild(
+      el("button", {
+        className: "btn-pirate btn-small btn-gold",
+        textContent: "← Ir a la Isla 1",
+        style: {
+          animation: "none",
+          opacity: "1",
+          transform: "none",
+          width: "auto",
+          margin: "1rem auto",
+        },
+        onClick: () => ScreenManager.show("island1"),
+      }),
+    );
+    content.appendChild(leftPanel);
+    container.appendChild(content);
+    return;
+  }
+
   // Left: Objective info + keys
   const leftPanel = el("div", {
     style: {
@@ -1238,26 +1306,19 @@ ScreenManager.register("island4", (container) => {
       className: "panel-dark",
       style: { padding: "0.7rem" },
       innerHTML: `<div style="font-family:'Cinzel',serif;color:var(--gold);font-size:0.9rem;margin-bottom:0.3rem;">🎯 Objetivo General:</div>
-      <div style="font-size:0.9rem;">Analizar el impacto de los plásticos en las especies marinas de la costa colombiana.</div>`,
+      <div style="font-size:0.9rem;">${themeData.objetivos.general}</div>`,
     }),
   );
 
   const feedback = el("div", {
     className: "feedback info",
-    textContent: "Arrastra las llaves a los escalones en el orden correcto",
+    textContent: `Tema: "${themeName}" — Arrastra las llaves a los escalones en el orden correcto`,
   });
   leftPanel.appendChild(feedback);
 
-  // Keys data (correct order: Entrevistar=0, Analizar=1, Comparar=2)
-  const keysData = [
-    {
-      id: 0,
-      text: "Entrevistar a pescadores locales sobre cambios en fauna marina",
-    },
-    { id: 1, text: "Analizar muestras de agua para detectar microplásticos" },
-    { id: 2, text: "Comparar zonas contaminadas vs. zonas protegidas" },
-  ];
-  const shuffledKeys = shuffle(keysData);
+  // Keys data from theme (correct order: id 0, 1, 2)
+  const keysData = themeData.objetivos.especificos;
+  const shuffledKeys = shuffle([...keysData]);
 
   leftPanel.appendChild(
     el("div", {
@@ -1366,7 +1427,7 @@ ScreenManager.register("island4", (container) => {
 
       // Place key in this step
       stepContents[i] = keyId;
-      contentArea.textContent = keysData[keyId].text;
+      contentArea.textContent = keysData.find((k) => k.id === keyId).text;
 
       // Hide key from container
       const keyEl = keysContainer.querySelector(`[data-key-id="${keyId}"]`);
@@ -1412,15 +1473,15 @@ ScreenManager.register("island4", (container) => {
         Dialog.showSequence(
           [
             {
-              name: "🏰 Guardián",
-              text: "¡La puerta se ha abierto! Has ordenado los objetivos correctamente.",
+              name: "🪜 Guardián de los Peldaños",
+              text: `¡La puerta se ha abierto! Has ordenado los objetivos sobre "${themeName}" correctamente.`,
             },
             {
-              name: "🏰 Guardián",
-              text: "Primero RECOPILAR datos (entrevistar), luego ANALIZAR la información, y finalmente COMPARAR resultados.",
+              name: "🪜 Guardián de los Peldaños",
+              text: "Primero DIAGNOSTICAR/IDENTIFICAR, luego ANALIZAR/EVALUAR, y finalmente PROPONER/DISEÑAR.",
             },
             {
-              name: "🏰 Guardián",
+              name: "🪜 Guardián de los Peldaños",
               text: "Los objetivos específicos deben seguir un orden lógico y ser medibles. ¡Cuarto fragmento obtenido!",
             },
           ],
@@ -1441,7 +1502,6 @@ ScreenManager.register("island4", (container) => {
           sz.classList.add("wrong");
           setTimeout(() => sz.classList.remove("wrong"), 600);
         });
-        // Reset steps — put keys back
         for (let s = 0; s < 3; s++) {
           if (stepContents[s] !== null) {
             const keyEl = keysContainer.querySelector(
@@ -1483,16 +1543,16 @@ ScreenManager.register("island4", (container) => {
 
   Dialog.showSequence([
     {
-      name: "🏰 Guardián",
+      name: "🪜 Guardián de los Peldaños",
       text: "¡Alto! Para abrir esta puerta necesitas ordenar los objetivos específicos.",
     },
     {
-      name: "🏰 Guardián",
-      text: "Cada llave representa un objetivo. Arrástralas a los escalones en el orden lógico.",
+      name: "🪜 Guardián de los Peldaños",
+      text: `El tema es "${themeName}". Cada llave representa un objetivo. Arrástralas a los escalones en el orden lógico.`,
     },
     {
-      name: "🏰 Guardián",
-      text: "Piensa: ¿qué harías primero? ¿Recopilar, analizar o comparar?",
+      name: "🪜 Guardián de los Peldaños",
+      text: "Piensa: ¿qué harías primero? ¿Diagnosticar, analizar o proponer?",
     },
   ]);
 });
@@ -1930,6 +1990,41 @@ ScreenManager.register("treasure", (container) => {
 
     await sleep(800);
 
+    // Build dynamic summary from theme
+    const tName = GameProgress.selected_theme;
+    const tData = tName ? getThemeByName(tName) : null;
+
+    // Problema section
+    let problemaSummary = "<em>No disponible</em>";
+    if (tData && tData.problema) {
+      const causas = tData.problema.items.filter((i) => i.zone === "causas").map((i) => i.text).join("; ");
+      const prob = tData.problema.items.filter((i) => i.zone === "problema").map((i) => i.text).join("; ");
+      const cons = tData.problema.items.filter((i) => i.zone === "consecuencias").map((i) => i.text).join("; ");
+      problemaSummary = `<em>Causas:</em> ${causas}.<br><em>Problema:</em> ${prob}.<br><em>Consecuencias:</em> ${cons}.`;
+    }
+
+    // Pregunta section
+    let preguntaSummary = "<em>No disponible</em>";
+    if (tData && tData.pregunta) {
+      const correcta = tData.pregunta.opciones.find((o) => o.correct);
+      if (correcta) preguntaSummary = `"${correcta.question}"`;
+    }
+
+    // Objetivos section
+    let objetivosSummary = "<em>No disponible</em>";
+    if (tData && tData.objetivos) {
+      objetivosSummary = tData.objetivos.especificos.map((o, i) => `${i + 1}. ${o.text}`).join("<br>");
+    }
+
+    // Justificación section
+    let justSummary = "<em>No disponible</em>";
+    if (tData && tData.justificacion) {
+      const imp = tData.justificacion.filter((j) => j.tipo === "importancia").map((j) => j.texto)[0] || "";
+      const impact = tData.justificacion.filter((j) => j.tipo === "impacto").map((j) => j.texto)[0] || "";
+      const util = tData.justificacion.filter((j) => j.tipo === "utilidad").map((j) => j.texto)[0] || "";
+      justSummary = `<em>Importancia:</em> ${imp}<br><em>Impacto:</em> ${impact}<br><em>Utilidad:</em> ${util}`;
+    }
+
     // Scroll with summary
     const scroll = el("div", {
       className: "panel-parchment",
@@ -1948,29 +2043,24 @@ ScreenManager.register("treasure", (container) => {
       <div style="margin-bottom:0.6rem;">
         <strong style="color:#8a5a20;">🧭 Título de Investigación:</strong><br>
         "${GameProgress.generated_title || "Título no generado"}"
-        ${GameProgress.selected_theme ? `<br><span style="font-size:0.8rem;color:#888;">(Tema: ${GameProgress.selected_theme})</span>` : ""}
+        ${tName ? `<br><span style="font-size:0.8rem;color:#888;">(Tema: ${tName})</span>` : ""}
       </div>
       <div style="margin-bottom:0.6rem;">
         <strong style="color:#8a5a20;">💀 Planteamiento del Problema:</strong><br>
-        <em>Causas:</em> Falta de educación ambiental, uso excesivo de plástico.<br>
-        <em>Problema:</em> Alta concentración de plásticos afectando fauna marina.<br>
-        <em>Consecuencias:</em> Muerte de peces, daño al ecosistema.
+        ${problemaSummary}
       </div>
       <div style="margin-bottom:0.6rem;">
         <strong style="color:#8a5a20;">🐙 Pregunta de Investigación:</strong><br>
-        "¿Por qué los plásticos afectan a las especies marinas de la costa colombiana?"
+        ${preguntaSummary}
       </div>
       <div style="margin-bottom:0.6rem;">
         <strong style="color:#8a5a20;">🪜 Objetivos Específicos:</strong><br>
-        1. Entrevistar a pescadores locales.<br>
-        2. Analizar muestras de agua.<br>
-        3. Comparar zonas contaminadas vs. protegidas.
+        ${tData && tData.objetivos ? `<em>General:</em> ${tData.objetivos.general}<br>` : ""}
+        ${objetivosSummary}
       </div>
       <div style="margin-bottom:0.6rem;">
         <strong style="color:#8a5a20;">🏴‍☠️ Justificación:</strong><br>
-        <em>Importancia:</em> Aporta al conocimiento científico sobre el tema.<br>
-        <em>Impacto:</em> Beneficia a comunidades afectadas directamente.<br>
-        <em>Utilidad:</em> Sirve para crear programas y políticas de mejora.
+        ${justSummary}
       </div>
       <div style="text-align:center;margin-top:0.8rem;">
         <strong style="color:#8a5a20;">⭐ Estrellas obtenidas: ${GameProgress.get_total_stars()}/15</strong>

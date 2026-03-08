@@ -1220,6 +1220,1249 @@ const THEME_DB = [
   },
 ];
 
+/* ============================================================
+   DATA FOR ISLANDS 2-4 (keyed by theme name)
+   – Isla 2: Problema (causas, problema central, consecuencias)
+   – Isla 3: Pregunta de investigación (1 correcta + 2 incorrectas)
+   – Isla 4: Objetivos (general + 3 específicos en orden lógico)
+   ============================================================ */
+
+const ISLANDS_EXTRA_DATA = {
+  "Redes sociales": {
+    problema: {
+      items: [
+        {
+          text: "Falta de regulación sobre el uso de plataformas digitales",
+          zone: "causas",
+        },
+        {
+          text: "Presión social por mantener una imagen idealizada en línea",
+          zone: "causas",
+        },
+        {
+          text: "Uso excesivo de redes sociales altera los hábitos de estudio",
+          zone: "problema",
+        },
+        {
+          text: "La dependencia a las redes genera aislamiento y distorsión de la realidad",
+          zone: "problema",
+        },
+        {
+          text: "Aumento de ansiedad y baja autoestima en usuarios jóvenes",
+          zone: "consecuencias",
+        },
+        {
+          text: "Deterioro del rendimiento académico y las relaciones interpersonales",
+          zone: "consecuencias",
+        },
+      ],
+    },
+    pregunta: {
+      opciones: [
+        {
+          label: "¿Cuánto?",
+          question: "¿Cuántas horas al día usan redes sociales los jóvenes?",
+          correct: false,
+        },
+        {
+          label: "¿Por qué?",
+          question:
+            "¿Por qué el uso excesivo de redes sociales afecta el rendimiento académico de los adolescentes?",
+          correct: true,
+        },
+        {
+          label: "¿Cómo?",
+          question: "¿Cómo funcionan los algoritmos de las redes sociales?",
+          correct: false,
+        },
+      ],
+    },
+    objetivos: {
+      general:
+        "Analizar la relación entre el uso de redes sociales y el rendimiento académico en adolescentes",
+      especificos: [
+        {
+          id: 0,
+          text: "Identificar los patrones de uso de redes sociales entre los estudiantes",
+        },
+        {
+          id: 1,
+          text: "Analizar la correlación entre horas de uso y calificaciones académicas",
+        },
+        {
+          id: 2,
+          text: "Proponer estrategias de uso responsable para mejorar el rendimiento",
+        },
+      ],
+    },
+  },
+  "Salud mental": {
+    problema: {
+      items: [
+        {
+          text: "Escasa atención psicológica en instituciones educativas",
+          zone: "causas",
+        },
+        {
+          text: "Estigma social hacia los problemas de salud mental",
+          zone: "causas",
+        },
+        {
+          text: "Incremento de trastornos de ansiedad y depresión en estudiantes",
+          zone: "problema",
+        },
+        {
+          text: "Falta de diagnóstico oportuno en jóvenes con malestar emocional",
+          zone: "problema",
+        },
+        {
+          text: "Aumento de la deserción escolar por problemas emocionales",
+          zone: "consecuencias",
+        },
+        {
+          text: "Deterioro de la calidad de vida y las relaciones familiares",
+          zone: "consecuencias",
+        },
+      ],
+    },
+    pregunta: {
+      opciones: [
+        {
+          label: "¿Cuánto?",
+          question: "¿Cuántas personas sufren de depresión en el mundo?",
+          correct: false,
+        },
+        {
+          label: "¿Por qué?",
+          question:
+            "¿Por qué los estudiantes universitarios presentan altos niveles de ansiedad durante los períodos de exámenes?",
+          correct: true,
+        },
+        {
+          label: "¿Cómo?",
+          question: "¿Cómo se diagnostica un trastorno mental?",
+          correct: false,
+        },
+      ],
+    },
+    objetivos: {
+      general:
+        "Analizar los factores que influyen en la salud mental de los estudiantes universitarios",
+      especificos: [
+        {
+          id: 0,
+          text: "Identificar los principales factores de riesgo emocional en el contexto académico",
+        },
+        {
+          id: 1,
+          text: "Evaluar el nivel de ansiedad y estrés durante períodos de evaluación",
+        },
+        {
+          id: 2,
+          text: "Proponer un programa de acompañamiento psicológico preventivo",
+        },
+      ],
+    },
+  },
+  "Inteligencia artificial": {
+    problema: {
+      items: [
+        {
+          text: "Falta de formación en el uso ético de herramientas de IA",
+          zone: "causas",
+        },
+        {
+          text: "Adopción acelerada de IA sin marcos regulatorios claros",
+          zone: "causas",
+        },
+        {
+          text: "Uso indiscriminado de IA para tareas académicas genera dependencia",
+          zone: "problema",
+        },
+        {
+          text: "La automatización amenaza empleos sin alternativas de reconversión",
+          zone: "problema",
+        },
+        {
+          text: "Pérdida de habilidades de pensamiento crítico en estudiantes",
+          zone: "consecuencias",
+        },
+        {
+          text: "Desigualdad entre quienes acceden a IA y quienes no",
+          zone: "consecuencias",
+        },
+      ],
+    },
+    pregunta: {
+      opciones: [
+        {
+          label: "¿Cuánto?",
+          question: "¿Cuántos estudiantes usan ChatGPT para hacer tareas?",
+          correct: false,
+        },
+        {
+          label: "¿Por qué?",
+          question:
+            "¿Por qué la integración de IA en la educación afecta el desarrollo del pensamiento crítico en universitarios?",
+          correct: true,
+        },
+        {
+          label: "¿Cómo?",
+          question: "¿Cómo funciona la inteligencia artificial?",
+          correct: false,
+        },
+      ],
+    },
+    objetivos: {
+      general:
+        "Analizar el impacto de la inteligencia artificial en el proceso de aprendizaje universitario",
+      especificos: [
+        {
+          id: 0,
+          text: "Diagnosticar las formas de uso de IA entre los estudiantes universitarios",
+        },
+        {
+          id: 1,
+          text: "Evaluar cómo el uso de IA afecta las competencias de análisis y redacción",
+        },
+        {
+          id: 2,
+          text: "Diseñar lineamientos para la integración ética de IA en la educación",
+        },
+      ],
+    },
+  },
+  "Contaminación ambiental": {
+    problema: {
+      items: [
+        {
+          text: "Falta de educación ambiental en comunidades y escuelas",
+          zone: "causas",
+        },
+        {
+          text: "Actividades industriales sin control de emisiones contaminantes",
+          zone: "causas",
+        },
+        {
+          text: "Altos niveles de contaminación del aire y agua en zonas industriales",
+          zone: "problema",
+        },
+        {
+          text: "Acumulación de residuos tóxicos que sobrepasan la capacidad de los ecosistemas",
+          zone: "problema",
+        },
+        {
+          text: "Incremento de enfermedades respiratorias y dermatológicas",
+          zone: "consecuencias",
+        },
+        {
+          text: "Degradación irreversible de ecosistemas acuáticos y terrestres",
+          zone: "consecuencias",
+        },
+      ],
+    },
+    pregunta: {
+      opciones: [
+        {
+          label: "¿Cuánto?",
+          question: "¿Cuánta basura se produce a nivel mundial cada año?",
+          correct: false,
+        },
+        {
+          label: "¿Por qué?",
+          question:
+            "¿Por qué la contaminación del agua afecta la salud de las comunidades rurales cercanas a zonas industriales?",
+          correct: true,
+        },
+        {
+          label: "¿Cómo?",
+          question: "¿Cómo se reciclan los materiales plásticos?",
+          correct: false,
+        },
+      ],
+    },
+    objetivos: {
+      general:
+        "Analizar el impacto de la contaminación ambiental en la salud de comunidades cercanas a zonas industriales",
+      especificos: [
+        {
+          id: 0,
+          text: "Identificar las principales fuentes de contaminación en la zona de estudio",
+        },
+        {
+          id: 1,
+          text: "Analizar los indicadores de salud de la población expuesta a contaminantes",
+        },
+        {
+          id: 2,
+          text: "Proponer medidas de mitigación ambiental basadas en los hallazgos",
+        },
+      ],
+    },
+  },
+  "Educación digital": {
+    problema: {
+      items: [
+        {
+          text: "Brecha digital entre zonas urbanas y rurales",
+          zone: "causas",
+        },
+        {
+          text: "Insuficiente capacitación docente en herramientas tecnológicas",
+          zone: "causas",
+        },
+        {
+          text: "Las plataformas digitales no se adaptan a las necesidades pedagógicas locales",
+          zone: "problema",
+        },
+        {
+          text: "La educación digital reproduce desigualdades de acceso y calidad",
+          zone: "problema",
+        },
+        {
+          text: "Bajo rendimiento en estudiantes sin acceso tecnológico adecuado",
+          zone: "consecuencias",
+        },
+        {
+          text: "Deserción escolar por frustración con entornos virtuales deficientes",
+          zone: "consecuencias",
+        },
+      ],
+    },
+    pregunta: {
+      opciones: [
+        {
+          label: "¿Cuánto?",
+          question: "¿Cuántos estudiantes tienen acceso a internet en el país?",
+          correct: false,
+        },
+        {
+          label: "¿Por qué?",
+          question:
+            "¿Por qué la falta de formación docente en TIC limita la efectividad de la educación digital en escuelas rurales?",
+          correct: true,
+        },
+        {
+          label: "¿Cómo?",
+          question: "¿Cómo se crea una plataforma educativa en línea?",
+          correct: false,
+        },
+      ],
+    },
+    objetivos: {
+      general:
+        "Evaluar la efectividad de la educación digital en el aprendizaje de estudiantes de zonas rurales",
+      especificos: [
+        {
+          id: 0,
+          text: "Diagnosticar el nivel de acceso tecnológico y habilidades digitales de los estudiantes",
+        },
+        {
+          id: 1,
+          text: "Comparar el rendimiento académico entre modalidad presencial y virtual",
+        },
+        {
+          id: 2,
+          text: "Proponer un modelo de capacitación digital adaptado al contexto rural",
+        },
+      ],
+    },
+  },
+  "Cambio climático": {
+    problema: {
+      items: [
+        {
+          text: "Emisiones desmedidas de gases de efecto invernadero",
+          zone: "causas",
+        },
+        {
+          text: "Deforestación masiva que reduce la capacidad de absorción de CO₂",
+          zone: "causas",
+        },
+        {
+          text: "El aumento de la temperatura global altera los patrones climáticos regionales",
+          zone: "problema",
+        },
+        {
+          text: "Las comunidades vulnerables carecen de recursos para adaptarse",
+          zone: "problema",
+        },
+        {
+          text: "Pérdida de cosechas y medios de vida en comunidades agrícolas",
+          zone: "consecuencias",
+        },
+        {
+          text: "Aumento de desastres naturales como inundaciones y sequías extremas",
+          zone: "consecuencias",
+        },
+      ],
+    },
+    pregunta: {
+      opciones: [
+        {
+          label: "¿Cuánto?",
+          question: "¿Cuántos grados ha aumentado la temperatura global?",
+          correct: false,
+        },
+        {
+          label: "¿Por qué?",
+          question:
+            "¿Por qué las comunidades agrícolas son las más vulnerables ante los efectos del cambio climático?",
+          correct: true,
+        },
+        {
+          label: "¿Cómo?",
+          question: "¿Cómo se mide el efecto invernadero?",
+          correct: false,
+        },
+      ],
+    },
+    objetivos: {
+      general:
+        "Analizar la vulnerabilidad de comunidades agrícolas frente a los efectos del cambio climático",
+      especificos: [
+        {
+          id: 0,
+          text: "Identificar los efectos climáticos más frecuentes en la zona de estudio",
+        },
+        {
+          id: 1,
+          text: "Evaluar las pérdidas económicas y sociales causadas por eventos climáticos extremos",
+        },
+        {
+          id: 2,
+          text: "Diseñar un plan de adaptación climática para la comunidad estudiada",
+        },
+      ],
+    },
+  },
+  Ciberacoso: {
+    problema: {
+      items: [
+        {
+          text: "Anonimato en plataformas digitales que facilita agresiones",
+          zone: "causas",
+        },
+        {
+          text: "Falta de protocolos de prevención en instituciones educativas",
+          zone: "causas",
+        },
+        {
+          text: "Aumento de casos de acoso virtual entre adolescentes en redes sociales",
+          zone: "problema",
+        },
+        {
+          text: "Las víctimas no denuncian por miedo o desconocimiento de sus derechos",
+          zone: "problema",
+        },
+        {
+          text: "Desarrollo de depresión, ansiedad y aislamiento social en víctimas",
+          zone: "consecuencias",
+        },
+        {
+          text: "Deterioro del clima escolar y aumento de la deserción",
+          zone: "consecuencias",
+        },
+      ],
+    },
+    pregunta: {
+      opciones: [
+        {
+          label: "¿Cuánto?",
+          question: "¿Cuántos adolescentes han sido víctimas de ciberacoso?",
+          correct: false,
+        },
+        {
+          label: "¿Por qué?",
+          question:
+            "¿Por qué el ciberacoso genera consecuencias psicológicas graves en los adolescentes de instituciones educativas?",
+          correct: true,
+        },
+        {
+          label: "¿Cómo?",
+          question: "¿Cómo se bloquea a un acosador en redes sociales?",
+          correct: false,
+        },
+      ],
+    },
+    objetivos: {
+      general:
+        "Analizar las causas y consecuencias del ciberacoso en adolescentes de instituciones educativas",
+      especificos: [
+        {
+          id: 0,
+          text: "Identificar las formas más comunes de ciberacoso entre los estudiantes",
+        },
+        {
+          id: 1,
+          text: "Evaluar el impacto psicológico del ciberacoso en las víctimas",
+        },
+        {
+          id: 2,
+          text: "Proponer un protocolo de prevención e intervención contra el ciberacoso escolar",
+        },
+      ],
+    },
+  },
+  "Uso del celular": {
+    problema: {
+      items: [
+        {
+          text: "Acceso ilimitado al celular sin supervisión parental",
+          zone: "causas",
+        },
+        {
+          text: "Diseño adictivo de aplicaciones y notificaciones",
+          zone: "causas",
+        },
+        {
+          text: "Los estudiantes usan el celular compulsivamente durante clases",
+          zone: "problema",
+        },
+        {
+          text: "La dependencia al celular interfiere con el sueño y la concentración",
+          zone: "problema",
+        },
+        {
+          text: "Disminución del rendimiento académico y la capacidad de atención",
+          zone: "consecuencias",
+        },
+        {
+          text: "Problemas de postura, visión y calidad del sueño",
+          zone: "consecuencias",
+        },
+      ],
+    },
+    pregunta: {
+      opciones: [
+        {
+          label: "¿Cuánto?",
+          question: "¿Cuántas horas al día pasan los jóvenes en el celular?",
+          correct: false,
+        },
+        {
+          label: "¿Por qué?",
+          question:
+            "¿Por qué el uso excesivo del celular afecta la concentración y el rendimiento de los estudiantes de secundaria?",
+          correct: true,
+        },
+        {
+          label: "¿Cómo?",
+          question:
+            "¿Cómo funcionan las notificaciones de las aplicaciones móviles?",
+          correct: false,
+        },
+      ],
+    },
+    objetivos: {
+      general:
+        "Analizar la relación entre el uso excesivo del celular y el rendimiento académico en estudiantes de secundaria",
+      especificos: [
+        {
+          id: 0,
+          text: "Determinar la frecuencia y duración de uso del celular entre los estudiantes",
+        },
+        {
+          id: 1,
+          text: "Analizar la relación entre el tiempo de uso y las calificaciones obtenidas",
+        },
+        {
+          id: 2,
+          text: "Elaborar recomendaciones para un uso equilibrado del celular",
+        },
+      ],
+    },
+  },
+  Videojuegos: {
+    problema: {
+      items: [
+        {
+          text: "Falta de control parental sobre el tiempo de juego",
+          zone: "causas",
+        },
+        {
+          text: "Diseño de videojuegos orientado a generar adicción con recompensas",
+          zone: "causas",
+        },
+        {
+          text: "El uso excesivo de videojuegos compite con el tiempo de estudio",
+          zone: "problema",
+        },
+        {
+          text: "Los jóvenes desarrollan patrones de conducta adictiva hacia los videojuegos",
+          zone: "problema",
+        },
+        {
+          text: "Bajo rendimiento escolar y sedentarismo en jugadores frecuentes",
+          zone: "consecuencias",
+        },
+        {
+          text: "Aislamiento social y deterioro de habilidades de comunicación",
+          zone: "consecuencias",
+        },
+      ],
+    },
+    pregunta: {
+      opciones: [
+        {
+          label: "¿Cuánto?",
+          question: "¿Cuántos jóvenes juegan videojuegos diariamente?",
+          correct: false,
+        },
+        {
+          label: "¿Por qué?",
+          question:
+            "¿Por qué el uso excesivo de videojuegos afecta el rendimiento académico y las relaciones sociales de los adolescentes?",
+          correct: true,
+        },
+        {
+          label: "¿Cómo?",
+          question: "¿Cómo se programan los videojuegos modernos?",
+          correct: false,
+        },
+      ],
+    },
+    objetivos: {
+      general:
+        "Analizar el impacto del uso excesivo de videojuegos en el desempeño académico y social de los adolescentes",
+      especificos: [
+        {
+          id: 0,
+          text: "Identificar los hábitos y patrones de juego de los estudiantes",
+        },
+        {
+          id: 1,
+          text: "Evaluar la relación entre horas de juego, rendimiento académico y vida social",
+        },
+        {
+          id: 2,
+          text: "Diseñar una guía de uso responsable de videojuegos para familias",
+        },
+      ],
+    },
+  },
+  "Alimentación saludable": {
+    problema: {
+      items: [
+        {
+          text: "Alta disponibilidad de comida ultraprocesada a bajo costo",
+          zone: "causas",
+        },
+        {
+          text: "Falta de educación nutricional en escuelas y hogares",
+          zone: "causas",
+        },
+        {
+          text: "Los estudiantes prefieren alimentos ultraprocesados sobre opciones nutritivas",
+          zone: "problema",
+        },
+        {
+          text: "Los hábitos alimenticios inadecuados se normalizan entre los jóvenes",
+          zone: "problema",
+        },
+        {
+          text: "Aumento de sobrepeso, obesidad y enfermedades crónicas a edad temprana",
+          zone: "consecuencias",
+        },
+        {
+          text: "Bajo rendimiento físico y cognitivo por deficiencias nutricionales",
+          zone: "consecuencias",
+        },
+      ],
+    },
+    pregunta: {
+      opciones: [
+        {
+          label: "¿Cuánto?",
+          question: "¿Cuánta comida chatarra consumen los jóvenes por semana?",
+          correct: false,
+        },
+        {
+          label: "¿Por qué?",
+          question:
+            "¿Por qué los hábitos alimenticios de los estudiantes de secundaria influyen en su rendimiento académico y su salud?",
+          correct: true,
+        },
+        {
+          label: "¿Cómo?",
+          question: "¿Cómo se elabora una dieta balanceada?",
+          correct: false,
+        },
+      ],
+    },
+    objetivos: {
+      general:
+        "Analizar la relación entre los hábitos alimenticios y el rendimiento académico en estudiantes de secundaria",
+      especificos: [
+        {
+          id: 0,
+          text: "Caracterizar los hábitos alimenticios de los estudiantes mediante encuestas",
+        },
+        {
+          id: 1,
+          text: "Analizar la relación entre calidad nutricional y rendimiento escolar",
+        },
+        {
+          id: 2,
+          text: "Proponer un programa de alimentación saludable para la institución educativa",
+        },
+      ],
+    },
+  },
+  "Actividad física": {
+    problema: {
+      items: [
+        {
+          text: "Sedentarismo promovido por el uso excesivo de pantallas",
+          zone: "causas",
+        },
+        {
+          text: "Escasez de espacios deportivos accesibles en la comunidad",
+          zone: "causas",
+        },
+        {
+          text: "Los jóvenes realizan menos actividad física de la recomendada por la OMS",
+          zone: "problema",
+        },
+        {
+          text: "La inactividad física se ha convertido en norma entre los adolescentes",
+          zone: "problema",
+        },
+        {
+          text: "Aumento de obesidad y enfermedades cardiovasculares en jóvenes",
+          zone: "consecuencias",
+        },
+        {
+          text: "Mayor prevalencia de estrés y problemas de salud mental en sedentarios",
+          zone: "consecuencias",
+        },
+      ],
+    },
+    pregunta: {
+      opciones: [
+        {
+          label: "¿Cuánto?",
+          question: "¿Cuántos minutos de ejercicio hacen los jóvenes al día?",
+          correct: false,
+        },
+        {
+          label: "¿Por qué?",
+          question:
+            "¿Por qué la falta de actividad física genera problemas de salud y rendimiento en los estudiantes de secundaria?",
+          correct: true,
+        },
+        {
+          label: "¿Cómo?",
+          question: "¿Cómo se diseña una rutina de ejercicios?",
+          correct: false,
+        },
+      ],
+    },
+    objetivos: {
+      general:
+        "Analizar la relación entre la actividad física y la salud integral de los estudiantes de secundaria",
+      especificos: [
+        {
+          id: 0,
+          text: "Medir el nivel de actividad física de los estudiantes mediante cuestionarios validados",
+        },
+        {
+          id: 1,
+          text: "Evaluar la relación entre actividad física, salud y rendimiento académico",
+        },
+        {
+          id: 2,
+          text: "Diseñar un programa de promoción de actividad física para la institución",
+        },
+      ],
+    },
+  },
+  "Estrés académico": {
+    problema: {
+      items: [
+        {
+          text: "Sobrecarga de tareas y evaluaciones simultáneas",
+          zone: "causas",
+        },
+        {
+          text: "Presión social y familiar por obtener altas calificaciones",
+          zone: "causas",
+        },
+        {
+          text: "Los estudiantes experimentan niveles crónicos de estrés durante el ciclo escolar",
+          zone: "problema",
+        },
+        {
+          text: "El estrés académico no es reconocido como problema de salud en las instituciones",
+          zone: "problema",
+        },
+        {
+          text: "Disminución del rendimiento, insomnio y agotamiento emocional",
+          zone: "consecuencias",
+        },
+        {
+          text: "Abandono de actividades recreativas y deterioro de relaciones sociales",
+          zone: "consecuencias",
+        },
+      ],
+    },
+    pregunta: {
+      opciones: [
+        {
+          label: "¿Cuánto?",
+          question:
+            "¿Cuántos estudiantes se sienten estresados por los exámenes?",
+          correct: false,
+        },
+        {
+          label: "¿Por qué?",
+          question:
+            "¿Por qué la sobrecarga de evaluaciones genera estrés crónico que afecta el bienestar de los estudiantes universitarios?",
+          correct: true,
+        },
+        {
+          label: "¿Cómo?",
+          question: "¿Cómo se maneja el estrés según la psicología?",
+          correct: false,
+        },
+      ],
+    },
+    objetivos: {
+      general:
+        "Analizar las causas y efectos del estrés académico en el bienestar de los estudiantes universitarios",
+      especificos: [
+        {
+          id: 0,
+          text: "Identificar las principales fuentes de estrés académico percibidas por los estudiantes",
+        },
+        {
+          id: 1,
+          text: "Evaluar la relación entre estrés académico, rendimiento y bienestar emocional",
+        },
+        {
+          id: 2,
+          text: "Proponer estrategias institucionales para la gestión saludable del estrés",
+        },
+      ],
+    },
+  },
+  "Tecnología en la educación": {
+    problema: {
+      items: [
+        {
+          text: "Resistencia al cambio por parte de docentes tradicionales",
+          zone: "causas",
+        },
+        {
+          text: "Infraestructura tecnológica insuficiente en las instituciones",
+          zone: "causas",
+        },
+        {
+          text: "La tecnología se usa más como entretenimiento que como herramienta pedagógica",
+          zone: "problema",
+        },
+        {
+          text: "No existe una estrategia clara para integrar tecnología en el currículo",
+          zone: "problema",
+        },
+        {
+          text: "Desigualdad en la calidad educativa entre instituciones equipadas y no equipadas",
+          zone: "consecuencias",
+        },
+        {
+          text: "Subutilización de recursos tecnológicos disponibles",
+          zone: "consecuencias",
+        },
+      ],
+    },
+    pregunta: {
+      opciones: [
+        {
+          label: "¿Cuánto?",
+          question: "¿Cuántas escuelas tienen computadoras en el país?",
+          correct: false,
+        },
+        {
+          label: "¿Por qué?",
+          question:
+            "¿Por qué la integración de tecnología en la educación no mejora significativamente el aprendizaje en las escuelas públicas?",
+          correct: true,
+        },
+        {
+          label: "¿Cómo?",
+          question: "¿Cómo se instalan proyectores en un salón de clases?",
+          correct: false,
+        },
+      ],
+    },
+    objetivos: {
+      general:
+        "Evaluar la efectividad de la tecnología como herramienta pedagógica en escuelas públicas",
+      especificos: [
+        {
+          id: 0,
+          text: "Diagnosticar el estado actual de la infraestructura tecnológica en las escuelas",
+        },
+        {
+          id: 1,
+          text: "Analizar cómo los docentes integran la tecnología en sus prácticas de enseñanza",
+        },
+        {
+          id: 2,
+          text: "Proponer un modelo de integración tecnológica basado en las necesidades detectadas",
+        },
+      ],
+    },
+  },
+  "Hábitos de sueño": {
+    problema: {
+      items: [
+        {
+          text: "Uso de pantallas electrónicas antes de dormir",
+          zone: "causas",
+        },
+        {
+          text: "Horarios irregulares de sueño por actividades nocturnas",
+          zone: "causas",
+        },
+        {
+          text: "Los adolescentes duermen significativamente menos de las 8 horas recomendadas",
+          zone: "problema",
+        },
+        {
+          text: "La mala calidad del sueño es normalizada como parte de la vida estudiantil",
+          zone: "problema",
+        },
+        {
+          text: "Déficit de atención y somnolencia durante las clases",
+          zone: "consecuencias",
+        },
+        {
+          text: "Mayor vulnerabilidad a enfermedades y trastornos del estado de ánimo",
+          zone: "consecuencias",
+        },
+      ],
+    },
+    pregunta: {
+      opciones: [
+        {
+          label: "¿Cuánto?",
+          question: "¿Cuántas horas duermen los adolescentes en promedio?",
+          correct: false,
+        },
+        {
+          label: "¿Por qué?",
+          question:
+            "¿Por qué los malos hábitos de sueño afectan el rendimiento académico y la salud de los adolescentes?",
+          correct: true,
+        },
+        {
+          label: "¿Cómo?",
+          question: "¿Cómo funciona el ciclo del sueño en el cerebro?",
+          correct: false,
+        },
+      ],
+    },
+    objetivos: {
+      general:
+        "Analizar la relación entre los hábitos de sueño y el rendimiento académico en adolescentes",
+      especificos: [
+        {
+          id: 0,
+          text: "Caracterizar los hábitos de sueño de los estudiantes mediante encuestas",
+        },
+        {
+          id: 1,
+          text: "Evaluar la correlación entre calidad de sueño y rendimiento escolar",
+        },
+        {
+          id: 2,
+          text: "Elaborar una guía de higiene del sueño dirigida a estudiantes y familias",
+        },
+      ],
+    },
+  },
+  "Consumo de información en internet": {
+    problema: {
+      items: [
+        {
+          text: "Algoritmos que priorizan contenido sensacionalista sobre el informativo",
+          zone: "causas",
+        },
+        {
+          text: "Falta de pensamiento crítico para evaluar fuentes de información",
+          zone: "causas",
+        },
+        {
+          text: "Los jóvenes consumen noticias falsas sin verificarlas y las comparten",
+          zone: "problema",
+        },
+        {
+          text: "No se distingue entre información confiable y contenido viral sin fundamento",
+          zone: "problema",
+        },
+        {
+          text: "Desinformación generalizada que afecta decisiones personales y colectivas",
+          zone: "consecuencias",
+        },
+        {
+          text: "Polarización social y pérdida de confianza en medios de comunicación",
+          zone: "consecuencias",
+        },
+      ],
+    },
+    pregunta: {
+      opciones: [
+        {
+          label: "¿Cuánto?",
+          question: "¿Cuántas noticias falsas circulan en internet al día?",
+          correct: false,
+        },
+        {
+          label: "¿Por qué?",
+          question:
+            "¿Por qué los estudiantes universitarios tienen dificultad para distinguir noticias falsas de información confiable en internet?",
+          correct: true,
+        },
+        {
+          label: "¿Cómo?",
+          question: "¿Cómo funcionan los algoritmos de los buscadores?",
+          correct: false,
+        },
+      ],
+    },
+    objetivos: {
+      general:
+        "Analizar la capacidad de los estudiantes universitarios para evaluar la confiabilidad de la información en internet",
+      especificos: [
+        {
+          id: 0,
+          text: "Diagnosticar las fuentes de información que utilizan habitualmente los estudiantes",
+        },
+        {
+          id: 1,
+          text: "Evaluar el nivel de competencia mediática y verificación de fuentes",
+        },
+        {
+          id: 2,
+          text: "Diseñar un taller de alfabetización informacional para la comunidad universitaria",
+        },
+      ],
+    },
+  },
+  "Relaciones sociales en línea": {
+    problema: {
+      items: [
+        {
+          text: "Sustitución de la comunicación presencial por interacciones virtuales",
+          zone: "causas",
+        },
+        {
+          text: "Creación de identidades idealizadas que no reflejan la realidad",
+          zone: "causas",
+        },
+        {
+          text: "Las relaciones en línea generan vínculos superficiales y sensación de soledad",
+          zone: "problema",
+        },
+        {
+          text: "Los jóvenes priorizan conexiones virtuales sobre relaciones presenciales",
+          zone: "problema",
+        },
+        {
+          text: "Aumento de inseguridad emocional y dependencia de la validación digital",
+          zone: "consecuencias",
+        },
+        {
+          text: "Dificultad para desarrollar habilidades sociales en contextos reales",
+          zone: "consecuencias",
+        },
+      ],
+    },
+    pregunta: {
+      opciones: [
+        {
+          label: "¿Cuánto?",
+          question: "¿Cuántos amigos virtuales tienen los jóvenes en promedio?",
+          correct: false,
+        },
+        {
+          label: "¿Por qué?",
+          question:
+            "¿Por qué las relaciones sociales en línea afectan la calidad de los vínculos interpersonales de los adolescentes?",
+          correct: true,
+        },
+        {
+          label: "¿Cómo?",
+          question: "¿Cómo se hacen amigos en redes sociales?",
+          correct: false,
+        },
+      ],
+    },
+    objetivos: {
+      general:
+        "Analizar el impacto de las relaciones sociales en línea sobre la calidad de los vínculos interpersonales en adolescentes",
+      especificos: [
+        {
+          id: 0,
+          text: "Identificar las plataformas y formas de interacción social más utilizadas",
+        },
+        {
+          id: 1,
+          text: "Evaluar la percepción de calidad en relaciones virtuales vs. presenciales",
+        },
+        {
+          id: 2,
+          text: "Proponer actividades que fortalezcan las habilidades sociales presenciales",
+        },
+      ],
+    },
+  },
+  "Aprendizaje virtual": {
+    problema: {
+      items: [
+        {
+          text: "Falta de metodologías didácticas adaptadas al entorno virtual",
+          zone: "causas",
+        },
+        {
+          text: "Desigualdad de acceso a dispositivos e internet estable",
+          zone: "causas",
+        },
+        {
+          text: "El aprendizaje virtual no logra los mismos resultados que la educación presencial",
+          zone: "problema",
+        },
+        {
+          text: "Los estudiantes experimentan desmotivación y fatiga digital",
+          zone: "problema",
+        },
+        {
+          text: "Aumento de la brecha de aprendizaje entre estudiantes con y sin recursos",
+          zone: "consecuencias",
+        },
+        {
+          text: "Pérdida de la dimensión socioafectiva del proceso educativo",
+          zone: "consecuencias",
+        },
+      ],
+    },
+    pregunta: {
+      opciones: [
+        {
+          label: "¿Cuánto?",
+          question: "¿Cuántos estudiantes prefieren las clases virtuales?",
+          correct: false,
+        },
+        {
+          label: "¿Por qué?",
+          question:
+            "¿Por qué el aprendizaje virtual genera desmotivación y menores resultados académicos en estudiantes de secundaria?",
+          correct: true,
+        },
+        {
+          label: "¿Cómo?",
+          question: "¿Cómo se configura una clase por Zoom?",
+          correct: false,
+        },
+      ],
+    },
+    objetivos: {
+      general:
+        "Evaluar los factores que afectan la efectividad del aprendizaje virtual en estudiantes de secundaria",
+      especificos: [
+        {
+          id: 0,
+          text: "Identificar los obstáculos técnicos y pedagógicos del aprendizaje virtual",
+        },
+        {
+          id: 1,
+          text: "Comparar el rendimiento académico en modalidad virtual vs. presencial",
+        },
+        {
+          id: 2,
+          text: "Proponer estrategias pedagógicas para mejorar la experiencia de aprendizaje virtual",
+        },
+      ],
+    },
+  },
+  "Bienestar emocional": {
+    problema: {
+      items: [
+        {
+          text: "Ausencia de programas de educación socioemocional en las escuelas",
+          zone: "causas",
+        },
+        {
+          text: "Normalización del malestar emocional como parte de la vida cotidiana",
+          zone: "causas",
+        },
+        {
+          text: "Los jóvenes no identifican ni gestionan adecuadamente sus emociones",
+          zone: "problema",
+        },
+        {
+          text: "El bienestar emocional no se prioriza en los entornos educativos",
+          zone: "problema",
+        },
+        {
+          text: "Aumento de conflictos interpersonales y dificultades de convivencia",
+          zone: "consecuencias",
+        },
+        {
+          text: "Mayor vulnerabilidad a trastornos de ansiedad y depresión",
+          zone: "consecuencias",
+        },
+      ],
+    },
+    pregunta: {
+      opciones: [
+        {
+          label: "¿Cuánto?",
+          question:
+            "¿Cuántos jóvenes se sienten emocionalmente bien en su vida diaria?",
+          correct: false,
+        },
+        {
+          label: "¿Por qué?",
+          question:
+            "¿Por qué la falta de educación socioemocional afecta el bienestar y la convivencia de los estudiantes de secundaria?",
+          correct: true,
+        },
+        {
+          label: "¿Cómo?",
+          question: "¿Cómo se definen las emociones según la psicología?",
+          correct: false,
+        },
+      ],
+    },
+    objetivos: {
+      general:
+        "Analizar el impacto de la educación socioemocional en el bienestar y la convivencia de los estudiantes de secundaria",
+      especificos: [
+        {
+          id: 0,
+          text: "Diagnosticar el nivel de competencias socioemocionales de los estudiantes",
+        },
+        {
+          id: 1,
+          text: "Evaluar la relación entre bienestar emocional, convivencia escolar y rendimiento",
+        },
+        {
+          id: 2,
+          text: "Diseñar un programa de educación socioemocional adaptado al contexto escolar",
+        },
+      ],
+    },
+  },
+};
+
+/* Merge extra data into THEME_DB entries */
+THEME_DB.forEach((theme) => {
+  const extra = ISLANDS_EXTRA_DATA[theme.name];
+  if (extra) Object.assign(theme, extra);
+});
+
 /* Helper: get theme by name */
 function getThemeByName(name) {
   return THEME_DB.find((t) => t.name === name) || null;
