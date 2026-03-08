@@ -5,8 +5,9 @@
 
 /* ======================== MAIN MENU ======================== */
 ScreenManager.register("menu", (container) => {
-  container.className = "screen active bg-ocean";
+  container.className = "screen active bg-menu";
   createStars(container, 50);
+  AudioManager.playMusic("menu");
 
   const center = el("div", {
     className: "flex-center flex-col",
@@ -91,6 +92,17 @@ ScreenManager.register("menu", (container) => {
   );
 
   container.appendChild(center);
+
+  // Mute button
+  const muteBtn = el("button", {
+    className: "mute-btn",
+    textContent: "🔊",
+    onClick: () => {
+      const muted = AudioManager.toggleMute();
+      muteBtn.textContent = muted ? "🔇" : "🔊";
+    },
+  });
+  container.appendChild(muteBtn);
 });
 
 function showInstructions(parent) {
@@ -165,6 +177,7 @@ ScreenManager.register("worldmap", (container) => {
   container.className = "screen active bg-ocean";
   createBubbles(container, 15);
   createWaves(container, 8);
+  AudioManager.playMusic("map");
 
   const island_positions = [
     { x: 0.15, y: 0.45 },
@@ -236,18 +249,33 @@ ScreenManager.register("worldmap", (container) => {
         "island-visual" +
         (completed ? " completed" : unlocked ? "" : " locked"),
     });
-    visual.style.background = completed
-      ? undefined
-      : unlocked
-        ? `linear-gradient(135deg, ${island_colors[i]}, ${island_colors[i]}cc)`
-        : undefined;
+    visual.style.background = "transparent";
+    visual.style.boxShadow = "none";
+    visual.style.borderRadius = "0";
 
+    // Use island image
+    const islandImg = el("img", {
+      src: `assets/objects/island_${i + 1}.png`,
+      alt: `Isla ${i + 1}`,
+      style: { width: "100%", height: "100%", objectFit: "contain", imageRendering: "pixelated" },
+    });
+    visual.appendChild(islandImg);
+
+    // Status icon overlay
     if (completed) {
-      visual.textContent = "✓";
-    } else if (unlocked) {
-      visual.textContent = i + 1;
-    } else {
-      visual.textContent = "🔒";
+      const sello = el("img", {
+        className: "island-status-icon",
+        src: "assets/ui/sello_completado.png",
+        alt: "Completado",
+      });
+      node.appendChild(sello);
+    } else if (!unlocked) {
+      const lock = el("img", {
+        className: "island-status-icon",
+        src: "assets/ui/candado.png",
+        alt: "Bloqueado",
+      });
+      node.appendChild(lock);
     }
     node.appendChild(visual);
 
@@ -270,6 +298,7 @@ ScreenManager.register("worldmap", (container) => {
       node.addEventListener(
         "click",
         ((idx) => () => {
+          AudioManager.playSFX("click");
           ScreenManager.show(sceneNames[idx]);
         })(i),
       );
@@ -308,6 +337,7 @@ ScreenManager.register("worldmap", (container) => {
 /* ======================== ISLAND 1 – Catalejo (Title) ======================== */
 ScreenManager.register("island1", (container) => {
   container.className = "screen active bg-island-green";
+  AudioManager.playMusic("island");
 
   // Title bar
   container.appendChild(
@@ -390,6 +420,7 @@ ScreenManager.register("island1", (container) => {
         feedback.className = "feedback correct";
         feedback.textContent =
           "¡Correcto! El título enfocado es sobre investigación marina.";
+        AudioManager.playSFX("correct");
 
         // Show dialog then return
         Dialog.showSequence(
@@ -408,6 +439,7 @@ ScreenManager.register("island1", (container) => {
             },
           ],
           () => {
+            AudioManager.playSFX("complete");
             GameProgress.complete_island(0);
             ScreenManager.show("worldmap");
           },
@@ -416,6 +448,7 @@ ScreenManager.register("island1", (container) => {
         btn.classList.add("wrong");
         GameProgress.record_error(0);
         screenShake();
+        AudioManager.playSFX("wrong");
         feedback.className = "feedback wrong";
         feedback.textContent =
           "✖ Ese tema es muy general. Busca algo más específico sobre investigación marina.";
@@ -481,6 +514,7 @@ ScreenManager.register("island1", (container) => {
 /* ======================== ISLAND 2 – Árbol (Problem) ======================== */
 ScreenManager.register("island2", (container) => {
   container.className = "screen active bg-cave";
+  AudioManager.playMusic("island");
 
   container.appendChild(
     el("div", {
@@ -517,16 +551,18 @@ ScreenManager.register("island2", (container) => {
   ];
 
   const zoneDefs = [
-    { id: "causas", name: "📋 Causas", color: "rgba(100,60,20,0.6)" },
+    { id: "causas", name: "Causas", color: "rgba(100,60,20,0.6)", img: "assets/objects/cofre_causas.png" },
     {
       id: "problema",
-      name: "⚠ Problema Central",
+      name: "Problema Central",
       color: "rgba(120,30,30,0.6)",
+      img: "assets/objects/cofre_problema.png",
     },
     {
       id: "consecuencias",
-      name: "💥 Consecuencias",
+      name: "Consecuencias",
       color: "rgba(20,50,100,0.6)",
+      img: "assets/objects/cofre_consecuencias.png",
     },
   ];
 
@@ -579,6 +615,14 @@ ScreenManager.register("island2", (container) => {
       className: "drop-zone",
       style: { background: zd.color, position: "relative" },
     });
+    // Chest image for zone
+    zone.appendChild(
+      el("img", {
+        src: zd.img,
+        alt: zd.name,
+        style: { width: "50px", height: "50px", objectFit: "contain", imageRendering: "pixelated", marginBottom: "0.3rem" },
+      }),
+    );
     zone.appendChild(
       el("div", { className: "drop-zone-title", textContent: zd.name }),
     );
@@ -637,6 +681,7 @@ ScreenManager.register("island2", (container) => {
 
       feedback.className = "feedback correct";
       feedback.textContent = `✓ ¡Correcto! "${data.text}" bien clasificado.`;
+      AudioManager.playSFX("correct");
 
       if (totalPlaced === 6) {
         handleIsland2Complete();
@@ -645,6 +690,7 @@ ScreenManager.register("island2", (container) => {
       // Wrong
       GameProgress.record_error(1);
       screenShake();
+      AudioManager.playSFX("wrong");
       feedback.className = "feedback wrong";
       feedback.textContent = `✖ "${data.text}" no pertenece a esa categoría. Intenta otra.`;
     }
@@ -669,6 +715,7 @@ ScreenManager.register("island2", (container) => {
         },
       ],
       () => {
+        AudioManager.playSFX("complete");
         GameProgress.complete_island(1);
         ScreenManager.show("worldmap");
       },
@@ -717,6 +764,7 @@ ScreenManager.register("island2", (container) => {
 ScreenManager.register("island3", (container) => {
   container.className = "screen active bg-night";
   createStars(container, 30);
+  AudioManager.playMusic("island");
 
   container.appendChild(
     el("div", {
@@ -830,6 +878,7 @@ ScreenManager.register("island3", (container) => {
         feedback.className = "feedback correct";
         feedback.textContent = "¡Correcto! El faro se enciende.";
         questionDisplay.textContent = lv.question;
+        AudioManager.playSFX("correct");
 
         // Light up
         faroImg.src = "assets/sprites/objects/faro_encendido.png";
@@ -851,6 +900,7 @@ ScreenManager.register("island3", (container) => {
             },
           ],
           () => {
+            AudioManager.playSFX("complete");
             GameProgress.complete_island(2);
             ScreenManager.show("worldmap");
           },
@@ -859,6 +909,7 @@ ScreenManager.register("island3", (container) => {
         btn.classList.add("wrong");
         GameProgress.record_error(2);
         screenShake();
+        AudioManager.playSFX("wrong");
         feedback.className = "feedback wrong";
         feedback.textContent =
           "✖ Esa pregunta es demasiado general o no se relaciona con el problema.";
@@ -917,6 +968,7 @@ ScreenManager.register("island3", (container) => {
 /* ======================== ISLAND 4 – Escalera (Objectives) ======================== */
 ScreenManager.register("island4", (container) => {
   container.className = "screen active bg-fortress";
+  AudioManager.playMusic("island");
 
   container.appendChild(
     el("div", {
@@ -1112,6 +1164,7 @@ ScreenManager.register("island4", (container) => {
       if (correct) {
         feedback.className = "feedback correct";
         feedback.textContent = "¡Orden correcto! La puerta se abre.";
+        AudioManager.playSFX("correct");
         stepZones.forEach((sz) => sz.classList.add("correct"));
         verifyBtn.disabled = true;
 
@@ -1136,6 +1189,7 @@ ScreenManager.register("island4", (container) => {
             },
           ],
           () => {
+            AudioManager.playSFX("complete");
             GameProgress.complete_island(3);
             ScreenManager.show("worldmap");
           },
@@ -1143,6 +1197,7 @@ ScreenManager.register("island4", (container) => {
       } else {
         GameProgress.record_error(3);
         screenShake();
+        AudioManager.playSFX("wrong");
         feedback.className = "feedback wrong";
         feedback.textContent =
           "✖ El orden no es correcto. Piensa: ¿qué va primero lógicamente?";
@@ -1209,6 +1264,7 @@ ScreenManager.register("island4", (container) => {
 /* ======================== ISLAND 5 – Taberna (Justification) ======================== */
 ScreenManager.register("island5", (container) => {
   container.className = "screen active bg-tavern";
+  AudioManager.playMusic("island");
 
   container.appendChild(
     el("div", {
@@ -1250,7 +1306,7 @@ ScreenManager.register("island5", (container) => {
   const pirates = [
     {
       name: "Pirata Teórico",
-      sprite: "assets/sprites/characters/pirata_teorico.png",
+      sprite: "assets/characters/npc_pirata_teorico.png",
       complaint: '"¿Para qué sirve esta investigación en la ciencia?"',
       correct:
         "Aporta nuevos datos sobre microplásticos que complementan estudios previos de biología marina.",
@@ -1261,7 +1317,7 @@ ScreenManager.register("island5", (container) => {
     },
     {
       name: "Pirata Indiferente",
-      sprite: "assets/sprites/characters/pirata_indiferente.png",
+      sprite: "assets/characters/npc_pirata_indiferente.png",
       complaint: '"¿A quién le importa? No afecta a nadie..."',
       correct:
         "Afecta a miles de familias costeras que dependen de la pesca para sobrevivir.",
@@ -1272,7 +1328,7 @@ ScreenManager.register("island5", (container) => {
     },
     {
       name: "Tabernero",
-      sprite: "assets/sprites/characters/tabernero.png",
+      sprite: "assets/characters/npc_tabernero.png",
       complaint: '"¿Y esto para qué sirve en la práctica?"',
       correct:
         "Los resultados pueden usarse para crear políticas de protección costera y programas de limpieza.",
@@ -1378,6 +1434,7 @@ ScreenManager.register("island5", (container) => {
       counter.textContent = `Piratas convencidos: ${convinced}/3`;
       feedback.className = "feedback correct";
       feedback.textContent = `✓ ¡${pirates[idx].name} ha sido convencido!`;
+      AudioManager.playSFX("correct");
 
       if (convinced === 3) {
         handleIsland5Complete();
@@ -1385,6 +1442,7 @@ ScreenManager.register("island5", (container) => {
     } else {
       GameProgress.record_error(4);
       screenShake();
+      AudioManager.playSFX("wrong");
       feedback.className = "feedback wrong";
       feedback.textContent =
         "✖ Ese argumento no es convincente. ¡Intenta con otro!";
@@ -1410,6 +1468,7 @@ ScreenManager.register("island5", (container) => {
         },
       ],
       () => {
+        AudioManager.playSFX("complete");
         GameProgress.complete_island(4);
         ScreenManager.show("worldmap");
       },
@@ -1455,6 +1514,7 @@ ScreenManager.register("island5", (container) => {
 ScreenManager.register("treasure", (container) => {
   container.className = "screen active bg-treasure";
   createStars(container, 30);
+  AudioManager.playMusic("victory");
 
   const content = el("div", {
     className: "flex-center flex-col",
@@ -1507,6 +1567,7 @@ ScreenManager.register("treasure", (container) => {
   chestContainer.addEventListener("click", async () => {
     if (opened) return;
     opened = true;
+    AudioManager.playSFX("complete");
 
     // Flash effect
     const flash = el("div", { className: "golden-flash" });

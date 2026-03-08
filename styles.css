@@ -98,54 +98,48 @@ body {
 
 /* === BACKGROUNDS === */
 .bg-ocean {
-  background: linear-gradient(
-    180deg,
-    #061428 0%,
-    var(--ocean-dark) 30%,
-    var(--ocean-mid) 60%,
-    #1a5276 100%
-  );
+  background: url('assets/backgrounds/bg_worldmap.png') center/cover no-repeat,
+    linear-gradient(180deg, #061428 0%, var(--ocean-dark) 30%, var(--ocean-mid) 60%, #1a5276 100%);
+}
+
+.bg-menu {
+  background: url('assets/backgrounds/bg_menu.png') center/cover no-repeat,
+    linear-gradient(180deg, #061428 0%, var(--ocean-dark) 30%, var(--ocean-mid) 60%, #1a5276 100%);
 }
 
 .bg-island-green {
-  background: linear-gradient(
-    180deg,
-    #6a9bd4 0%,
-    #6a9bd4 25%,
-    #3a6b3a 25%,
-    #2d5a2d 100%
-  );
+  background: url('assets/backgrounds/bg_island1.png') center/cover no-repeat,
+    linear-gradient(180deg, #6a9bd4 0%, #6a9bd4 25%, #3a6b3a 25%, #2d5a2d 100%);
+}
+
+.bg-island2 {
+  background: url('assets/backgrounds/bg_island2.png') center/cover no-repeat,
+    linear-gradient(180deg, #1a1520 0%, #15101b 50%, #0f0c15 100%);
 }
 
 .bg-cave {
-  background: linear-gradient(180deg, #1a1520 0%, #15101b 50%, #0f0c15 100%);
+  background: url('assets/backgrounds/bg_island2.png') center/cover no-repeat,
+    linear-gradient(180deg, #1a1520 0%, #15101b 50%, #0f0c15 100%);
 }
 
 .bg-night {
-  background: linear-gradient(180deg, #0a0c20 0%, #0f1530 40%, #0a1830 100%);
+  background: url('assets/backgrounds/bg_island3.png') center/cover no-repeat,
+    linear-gradient(180deg, #0a0c20 0%, #0f1530 40%, #0a1830 100%);
 }
 
 .bg-fortress {
-  background: linear-gradient(
-    180deg,
-    #8a6a45 0%,
-    #8a6a45 25%,
-    #3d3020 25%,
-    #2a2015 100%
-  );
+  background: url('assets/backgrounds/bg_island4.png') center/cover no-repeat,
+    linear-gradient(180deg, #8a6a45 0%, #8a6a45 25%, #3d3020 25%, #2a2015 100%);
 }
 
 .bg-tavern {
-  background: linear-gradient(180deg, #3d2515 0%, #30180c 50%, #251008 100%);
+  background: url('assets/backgrounds/bg_island5.png') center/cover no-repeat,
+    linear-gradient(180deg, #3d2515 0%, #30180c 50%, #251008 100%);
 }
 
 .bg-treasure {
-  background: radial-gradient(
-    ellipse at center,
-    #1a1508 0%,
-    #0f0a08 50%,
-    #050305 100%
-  );
+  background: url('assets/backgrounds/bg_treasure.png') center/cover no-repeat,
+    radial-gradient(ellipse at center, #1a1508 0%, #0f0a08 50%, #050305 100%);
 }
 
 /* === STARS / PARTICLES (CSS) === */
@@ -390,6 +384,7 @@ body {
   background: rgba(10, 12, 20, 0.94);
   border: 3px solid var(--gold);
   border-radius: var(--radius);
+  border-image: url('assets/ui/dialog_frame.png') 20 stretch;
   padding: 1rem 1.2rem;
   z-index: 100;
   display: none;
@@ -1156,4 +1151,83 @@ body {
 }
 .gap-2 {
   gap: 1rem;
+}
+
+/* === ISLAND IMAGES (World Map) === */
+.island-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.island-visual.locked img {
+  filter: grayscale(1) brightness(0.4);
+}
+
+.island-visual.completed img {
+  filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+}
+
+.island-status-icon {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  z-index: 5;
+}
+
+/* === NPC CHARACTER IN DIALOG === */
+.dialog-npc {
+  position: absolute;
+  bottom: 100%;
+  left: 10px;
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  margin-bottom: -5px;
+  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+}
+
+/* === MUTE BUTTON === */
+.mute-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 50;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.mute-btn:hover {
+  background: rgba(0,0,0,0.8);
+  transform: scale(1.1);
+}
+
+/* === PERGAMINO PANEL (Instructions overlay) === */
+.panel-pergamino {
+  background: url('assets/ui/pergamino_panel.png') center/cover no-repeat;
+  border: 3px solid #8a6a30;
+  border-radius: var(--radius-sm);
+  color: #3a2a10;
+  padding: 2rem;
+  box-shadow: var(--shadow-dark);
+}
+
+/* === OBJECT IMAGES === */
+.object-img {
+  max-width: 120px;
+  max-height: 120px;
+  object-fit: contain;
+  image-rendering: pixelated;
 }

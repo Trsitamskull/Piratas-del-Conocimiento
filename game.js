@@ -338,6 +338,66 @@ function shuffle(arr) {
   return a;
 }
 
+/* ---------- AUDIO MANAGER ---------- */
+const AudioManager = {
+  music: null,
+  currentTrack: null,
+  musicVolume: 0.4,
+  sfxVolume: 0.6,
+  muted: false,
+
+  tracks: {
+    menu: "assets/audio/music_menu.mp3",
+    map: "assets/audio/music_map.ogg",
+    island: "assets/audio/music_island.mp3",
+    victory: "assets/audio/music_victory.mp3",
+  },
+
+  sfx: {
+    click: "assets/audio/sfx_click.mp3",
+    correct: "assets/audio/sfx_correct.mp3",
+    wrong: "assets/audio/sfx_wrong.mp3",
+    complete: "assets/audio/sfx_complete.mp3",
+  },
+
+  playMusic(trackName) {
+    if (this.currentTrack === trackName) return;
+    this.stopMusic();
+    const src = this.tracks[trackName];
+    if (!src) return;
+    this.music = new Audio(src);
+    this.music.loop = true;
+    this.music.volume = this.muted ? 0 : this.musicVolume;
+    this.music.play().catch(() => {});
+    this.currentTrack = trackName;
+  },
+
+  stopMusic() {
+    if (this.music) {
+      this.music.pause();
+      this.music.currentTime = 0;
+      this.music = null;
+    }
+    this.currentTrack = null;
+  },
+
+  playSFX(name) {
+    const src = this.sfx[name];
+    if (!src || this.muted) return;
+    const audio = new Audio(src);
+    audio.volume = this.sfxVolume;
+    audio.play().catch(() => {});
+  },
+
+  toggleMute() {
+    this.muted = !this.muted;
+    if (this.music) {
+      this.music.volume = this.muted ? 0 : this.musicVolume;
+    }
+    return this.muted;
+  },
+};
+
 /* ---------- INIT ---------- */
 document.addEventListener("DOMContentLoaded", () => {
   SceneTransition.init();
