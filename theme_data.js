@@ -2457,28 +2457,8 @@ const ISLANDS_EXTRA_DATA = {
   },
 };
 
-/* Helper: get theme by name (Island 1 & 5 base data) */
+/* Helper: get theme by name (O(1) Map lookup) */
+const _themeMap = new Map(THEME_DB.map((t) => [t.name, t]));
 function getThemeByName(name) {
-  return THEME_DB.find((t) => t.name === name) || null;
-}
-
-/* ============================================================
-   POPULATION-SPECIFIC DATA (Islands 2-4)
-   Keyed by "ThemeName::Population"
-   Each entry has: problema, pregunta, objetivos
-   Loaded from population_data.js
-   ============================================================ */
-
-/*
- * getPopulationData(themeName, population)
- * Returns population-specific data for Islands 2-4.
- * Falls back to ISLANDS_EXTRA_DATA[themeName] if no specific variant exists.
- */
-function getPopulationData(themeName, population) {
-  const key = themeName + "::" + population;
-  if (typeof POPULATION_DATA !== "undefined" && POPULATION_DATA[key]) {
-    return POPULATION_DATA[key];
-  }
-  // Fallback: use generic theme data
-  return ISLANDS_EXTRA_DATA[themeName] || null;
+  return _themeMap.get(name) || null;
 }

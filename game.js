@@ -17,7 +17,6 @@ const GameProgress = {
     "Puerto del Ron\nSangriento (Justificación)",
   ],
   selected_theme: null,
-  selected_population: null,
   generated_title: null,
 
   complete_island(index) {
@@ -63,7 +62,6 @@ const GameProgress = {
     this.island_errors = [0, 0, 0, 0, 0];
     this.island_stars = [0, 0, 0, 0, 0];
     this.selected_theme = null;
-    this.selected_population = null;
     this.generated_title = null;
   },
 
@@ -74,7 +72,6 @@ const GameProgress = {
       island_errors: [...this.island_errors],
       island_stars: [...this.island_stars],
       selected_theme: this.selected_theme,
-      selected_population: this.selected_population,
       generated_title: this.generated_title,
     };
     try {
@@ -100,7 +97,6 @@ const GameProgress = {
       this.island_errors = d.island_errors || [0, 0, 0, 0, 0];
       this.island_stars = d.island_stars || [0, 0, 0, 0, 0];
       this.selected_theme = d.selected_theme || null;
-      this.selected_population = d.selected_population || null;
       this.generated_title = d.generated_title || null;
       return true;
     } catch (e) {
@@ -138,6 +134,13 @@ const SceneTransition = {
 const ScreenManager = {
   currentScreen: null,
   screens: {},
+  _screenEls: null,
+
+  _getScreenEls() {
+    if (!this._screenEls)
+      this._screenEls = document.querySelectorAll(".screen");
+    return this._screenEls;
+  },
 
   register(name, renderFn) {
     this.screens[name] = renderFn;
@@ -145,12 +148,10 @@ const ScreenManager = {
 
   async show(name) {
     await SceneTransition.fadeTo(() => {
-      // hide all
-      document.querySelectorAll(".screen").forEach((s) => {
+      this._getScreenEls().forEach((s) => {
         s.classList.remove("active");
         s.innerHTML = "";
       });
-      // render new
       const container = document.getElementById("screen-" + name);
       if (container && this.screens[name]) {
         this.screens[name](container);
@@ -160,9 +161,8 @@ const ScreenManager = {
     });
   },
 
-  /* Immediate show, no transition (first load) */
   showImmediate(name) {
-    document.querySelectorAll(".screen").forEach((s) => {
+    this._getScreenEls().forEach((s) => {
       s.classList.remove("active");
       s.innerHTML = "";
     });
@@ -370,6 +370,36 @@ function shuffle(arr) {
   return a;
 }
 
+/* ---------- SHARED STYLE CONSTANTS ---------- */
+const NO_ANIM = { animation: "none", opacity: "1", transform: "none" };
+
+/* ---------- DRAG & DROP HELPERS ---------- */
+function makeDraggable(elem, getData) {
+  elem.draggable = true;
+  elem.addEventListener("dragstart", (e) => {
+    e.dataTransfer.setData("text/plain", JSON.stringify(getData()));
+    elem.classList.add("dragging");
+  });
+  elem.addEventListener("dragend", () => elem.classList.remove("dragging"));
+}
+
+function makeDropTarget(zone, onDrop) {
+  zone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    zone.classList.add("drag-over");
+  });
+  zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
+  zone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    zone.classList.remove("drag-over");
+    try {
+      onDrop(JSON.parse(e.dataTransfer.getData("text/plain")));
+    } catch (err) {
+      console.warn("Drop parse error:", err);
+    }
+  });
+}
+
 /* ---------- AUDIO MANAGER ---------- */
 const AudioManager = {
   music: null,
@@ -378,29 +408,51 @@ const AudioManager = {
   sfxVolume: 0.6,
   muted: false,
 
-  tracks: {
+  trackSources: {
     menu: "assets/audio/music_menu.mp3",
     map: "assets/audio/music_map.ogg",
     island: "assets/audio/music_island.mp3",
     victory: "assets/audio/music_victory.mp3",
   },
 
-  sfx: {
+  sfxSources: {
     click: "assets/audio/sfx_click.mp3",
     correct: "assets/audio/sfx_correct.mp3",
     wrong: "assets/audio/sfx_wrong.mp3",
     complete: "assets/audio/sfx_complete.mp3",
   },
 
+  // Preloaded audio elements
+  _musicCache: {},
+  _sfxCache: {},
+
+  preload() {
+    // Preload music tracks
+    for (const [name, src] of Object.entries(this.trackSources)) {
+      const audio = new Audio();
+      audio.preload = "auto";
+      audio.src = src;
+      audio.loop = true;
+      this._musicCache[name] = audio;
+    }
+    // Preload SFX (one master copy per sound)
+    for (const [name, src] of Object.entries(this.sfxSources)) {
+      const audio = new Audio();
+      audio.preload = "auto";
+      audio.src = src;
+      this._sfxCache[name] = audio;
+    }
+  },
+
   playMusic(trackName) {
     if (this.currentTrack === trackName) return;
     this.stopMusic();
-    const src = this.tracks[trackName];
-    if (!src) return;
-    this.music = new Audio(src);
-    this.music.loop = true;
-    this.music.volume = this.muted ? 0 : this.musicVolume;
-    this.music.play().catch(() => {});
+    const audio = this._musicCache[trackName];
+    if (!audio) return;
+    audio.volume = this.muted ? 0 : this.musicVolume;
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
+    this.music = audio;
     this.currentTrack = trackName;
   },
 
@@ -414,11 +466,12 @@ const AudioManager = {
   },
 
   playSFX(name) {
-    const src = this.sfx[name];
-    if (!src || this.muted) return;
-    const audio = new Audio(src);
-    audio.volume = this.sfxVolume;
-    audio.play().catch(() => {});
+    const master = this._sfxCache[name];
+    if (!master || this.muted) return;
+    // Clone allows overlapping sounds without creating from scratch
+    const clone = master.cloneNode();
+    clone.volume = this.sfxVolume;
+    clone.play().catch(() => {});
   },
 
   toggleMute() {
@@ -430,9 +483,33 @@ const AudioManager = {
   },
 };
 
+/* ---------- IMAGE PRELOADER ---------- */
+function preloadImages(paths) {
+  paths.forEach((src) => {
+    const img = new Image();
+    img.src = src;
+  });
+}
+
 /* ---------- INIT ---------- */
 document.addEventListener("DOMContentLoaded", () => {
   SceneTransition.init();
   Dialog.init();
+  AudioManager.preload();
+  preloadImages([
+    "assets/ui/sello_completado.png",
+    "assets/ui/candado.png",
+    "assets/objects/cofre_causas.png",
+    "assets/sprites/objects/faro_apagado.png",
+    "assets/sprites/objects/faro_encendido.png",
+    "assets/sprites/objects/llave.png",
+    "assets/sprites/objects/puerta_abierta.png",
+    "assets/sprites/objects/cofre_cerrado.png",
+    "assets/sprites/objects/cofre_abierto.png",
+    ...Array.from(
+      { length: 5 },
+      (_, i) => `assets/objects/island_${i + 1}.png`,
+    ),
+  ]);
   ScreenManager.showImmediate("menu");
 });

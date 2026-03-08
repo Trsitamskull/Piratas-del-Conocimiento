@@ -3,7 +3,7 @@
    Estilos globales del juego
    ============================================================ */
 
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lora:ital,wght@0,400;0,700;1,400&family=Pirata+One&display=swap");
+/* Fonts loaded via <link> in index.html for non-blocking rendering */
 
 /* === RESET / BASE === */
 *,
@@ -56,10 +56,11 @@ body {
   overflow: hidden;
   max-width: 1280px;
   max-height: 720px;
-  /* Center vertically & horizontally (using inset+margin to keep transform free for shake) */
+  /* Center vertically & horizontally */
   position: absolute;
-  inset: 0;
-  margin: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   border-radius: 4px;
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
 }
@@ -905,11 +906,6 @@ body {
   margin-bottom: 0.3rem;
 }
 
-.pirate-icon-emoji {
-  font-size: 2.8rem;
-  margin-bottom: 0.3rem;
-}
-
 .pirate-name {
   font-family: "Cinzel", serif;
   font-size: 0.85rem;
@@ -924,49 +920,6 @@ body {
   display: flex;
   align-items: center;
   line-height: 1.3;
-}
-
-.pirate-talk-btn {
-  margin-top: 0.4rem;
-  padding: 0.4rem 1rem;
-  background: rgba(60, 55, 30, 0.8);
-  border: 1px solid rgba(120, 100, 60, 0.6);
-  border-radius: 4px;
-  color: #fff;
-  cursor: pointer;
-  font-size: 0.85rem;
-  transition: var(--transition);
-}
-
-.pirate-talk-btn:hover {
-  background: rgba(80, 75, 40, 0.9);
-  border-color: var(--gold);
-}
-
-.pirate-talk-btn:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-
-.option-btn {
-  display: block;
-  width: 100%;
-  padding: 0.7rem 1rem;
-  margin: 0.3rem 0;
-  background: rgba(40, 35, 25, 0.9);
-  border: 1px solid rgba(100, 80, 50, 0.5);
-  border-radius: 6px;
-  color: #fff;
-  font-size: 0.9rem;
-  text-align: left;
-  cursor: pointer;
-  transition: var(--transition);
-  line-height: 1.3;
-}
-
-.option-btn:hover {
-  background: rgba(60, 50, 30, 0.9);
-  border-color: var(--gold);
 }
 
 /* === TREASURE SCREEN === */
@@ -1068,36 +1021,6 @@ body {
   }
 }
 
-/* === CATALEJO (Island 1) === */
-.catalejo-cursor {
-  position: absolute;
-  pointer-events: none;
-  width: 55px;
-  height: 55px;
-  z-index: 50;
-  transition: none;
-}
-
-/* === DOOR (Island 4) === */
-.door-visual {
-  width: 120px;
-  height: 180px;
-  background: linear-gradient(180deg, #3a1a05, #2a0f02);
-  border: 3px solid rgba(120, 100, 60, 0.6);
-  border-radius: 8px 8px 0 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.5rem;
-  position: relative;
-  transition: var(--transition);
-}
-
-.door-visual.open {
-  background: linear-gradient(180deg, #1a4a1a, #0f300f);
-  border-color: var(--success);
-}
-
 /* === RESPONSIVE === */
 @media (max-width: 900px) {
   .title-pirate {
@@ -1137,6 +1060,11 @@ body {
 /* === UTILITY === */
 .hidden {
   display: none !important;
+}
+.btn-static {
+  animation: none;
+  opacity: 1;
+  transform: none;
 }
 .text-gold {
   color: var(--gold);
@@ -1227,16 +1155,6 @@ body {
 .mute-btn:hover {
   background: rgba(0, 0, 0, 0.8);
   transform: scale(1.1);
-}
-
-/* === PERGAMINO PANEL (Instructions overlay) === */
-.panel-pergamino {
-  background: url("assets/ui/pergamino_panel.png") center/cover no-repeat;
-  border: 3px solid #8a6a30;
-  border-radius: var(--radius-sm);
-  color: #3a2a10;
-  padding: 2rem;
-  box-shadow: var(--shadow-dark);
 }
 
 /* === OBJECT IMAGES === */

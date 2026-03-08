@@ -137,7 +137,7 @@ function showInstructions(parent) {
       <span>Convence a los piratas escépticos eligiendo argumentos de importancia, impacto y utilidad en 3 rondas.</span>
     </div>
     <div style="text-align:center;margin-top:1.2rem;">
-      <button class="btn-pirate btn-small btn-red" style="animation:none;opacity:1;transform:none;" onclick="this.closest('.overlay').remove()">Cerrar</button>
+      <button class="btn-pirate btn-small btn-red btn-static" onclick="this.closest('.overlay').remove()">Cerrar</button>
     </div>`;
   overlay.appendChild(modal);
   parent.appendChild(overlay);
@@ -166,7 +166,7 @@ function showCredits(parent) {
     <p style="color:var(--gold);font-size:0.9rem;">Sprites generados con PixelLab AI</p>
     <p style="color:var(--gold);font-size:0.9rem;">Versión Web – 2025</p>
     <div style="margin-top:1.2rem;">
-      <button class="btn-pirate btn-small btn-red" style="animation:none;opacity:1;transform:none;" onclick="this.closest('.overlay').remove()">Cerrar</button>
+      <button class="btn-pirate btn-small btn-red btn-static" onclick="this.closest('.overlay').remove()">Cerrar</button>
     </div>`;
   overlay.appendChild(modal);
   parent.appendChild(overlay);
@@ -186,20 +186,13 @@ ScreenManager.register("worldmap", (container) => {
     { x: 0.72, y: 0.3 },
     { x: 0.88, y: 0.5 },
   ];
-  const island_colors = ["#2d8a2d", "#8a6a30", "#2a5a9e", "#6a3a20", "#5a2a4a"];
 
   // Header
   const header = el("div", { className: "map-header" });
   const backBtn = el("button", {
     className: "btn-pirate btn-small btn-red",
     textContent: "← Menú",
-    style: {
-      animation: "none",
-      opacity: "1",
-      transform: "none",
-      margin: "0",
-      width: "auto",
-    },
+    style: { ...NO_ANIM, margin: "0", width: "auto" },
     onClick: () => ScreenManager.show("menu"),
   });
   header.appendChild(backBtn);
@@ -371,7 +364,6 @@ ScreenManager.register("island1", (container) => {
   content.appendChild(feedback);
 
   // === STATE ===
-  let currentStep = "theme-selection"; // theme-selection | word-classification | complete
   let selectedTheme = null;
   let themeData = null;
 
@@ -422,13 +414,7 @@ ScreenManager.register("island1", (container) => {
     className: "btn-pirate btn-small btn-gold",
     textContent: "🔍 Explorar ideas",
     disabled: true,
-    style: {
-      animation: "none",
-      opacity: "0.5",
-      transform: "none",
-      width: "auto",
-      marginTop: "0.3rem",
-    },
+    style: { ...NO_ANIM, opacity: "0.5", width: "auto", marginTop: "0.3rem" },
     onClick: () => {
       AudioManager.playSFX("click");
       goToStep2();
@@ -484,23 +470,9 @@ ScreenManager.register("island1", (container) => {
 
     // Drag events (not for tema cofre — auto-filled)
     if (c.id !== "tema") {
-      slot.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        slot.classList.add("drag-over");
-      });
-      slot.addEventListener("dragleave", () =>
-        slot.classList.remove("drag-over"),
+      makeDropTarget(slot, (data) =>
+        handleCofreDrop(data, c.id, slot, wordArea),
       );
-      slot.addEventListener("drop", (e) => {
-        e.preventDefault();
-        slot.classList.remove("drag-over");
-        try {
-          const data = JSON.parse(e.dataTransfer.getData("text/plain"));
-          handleCofreDrop(data, c.id, slot, wordArea);
-        } catch (err) {
-          console.warn("Drop parse error (cofre):", err);
-        }
-      });
     }
 
     cofres[c.id] = { slot, wordArea, word: null };
@@ -540,7 +512,6 @@ ScreenManager.register("island1", (container) => {
 
   // === FUNCTIONS ===
   function goToStep2() {
-    currentStep = "word-classification";
     themeData = getThemeByName(selectedTheme);
     if (!themeData) return;
 
@@ -566,20 +537,10 @@ ScreenManager.register("island1", (container) => {
       const card = el("div", {
         className: "word-card",
         textContent: w.text,
-        draggable: "true",
       });
       card.dataset.type = w.type;
       card.dataset.text = w.text;
-
-      card.addEventListener("dragstart", (e) => {
-        e.dataTransfer.setData(
-          "text/plain",
-          JSON.stringify({ text: w.text, type: w.type }),
-        );
-        card.classList.add("dragging");
-      });
-      card.addEventListener("dragend", () => card.classList.remove("dragging"));
-
+      makeDraggable(card, () => ({ text: w.text, type: w.type }));
       wordBank.appendChild(card);
     });
 
@@ -641,18 +602,10 @@ ScreenManager.register("island1", (container) => {
     const card = el("div", {
       className: "word-card",
       textContent: text,
-      draggable: "true",
     });
     card.dataset.type = existingData.type;
     card.dataset.text = text;
-    card.addEventListener("dragstart", (e) => {
-      e.dataTransfer.setData(
-        "text/plain",
-        JSON.stringify({ text, type: existingData.type }),
-      );
-      card.classList.add("dragging");
-    });
-    card.addEventListener("dragend", () => card.classList.remove("dragging"));
+    makeDraggable(card, () => ({ text, type: existingData.type }));
     wordBank.appendChild(card);
   }
 
@@ -663,7 +616,6 @@ ScreenManager.register("island1", (container) => {
     const title = `${fenomeno.charAt(0).toUpperCase() + fenomeno.slice(1)} de ${tema.toLowerCase()} en ${poblacion.toLowerCase()}`;
 
     GameProgress.selected_theme = selectedTheme;
-    GameProgress.selected_population = poblacion;
     GameProgress.generated_title = title;
 
     titleReveal.style.display = "block";
@@ -751,8 +703,7 @@ ScreenManager.register("island2", (container) => {
 
   // Load theme from Island 1
   const themeName = GameProgress.selected_theme;
-  const popName = GameProgress.selected_population;
-  const themeData = themeName ? getPopulationData(themeName, popName) : null;
+  const themeData = themeName ? getThemeByName(themeName) : null;
 
   if (!themeData || !themeData.problema) {
     feedback.className = "feedback wrong";
@@ -762,13 +713,7 @@ ScreenManager.register("island2", (container) => {
       el("button", {
         className: "btn-pirate btn-small btn-gold",
         textContent: "← Ir a la Isla 1",
-        style: {
-          animation: "none",
-          opacity: "1",
-          transform: "none",
-          width: "auto",
-          margin: "1rem auto",
-        },
+        style: { ...NO_ANIM, width: "auto", margin: "1rem auto" },
         onClick: () => ScreenManager.show("island1"),
       }),
     );
@@ -822,20 +767,10 @@ ScreenManager.register("island2", (container) => {
     const d = el("div", {
       className: "drag-item",
       textContent: item.text,
-      draggable: "true",
     });
     d.dataset.zone = item.zone;
     d.dataset.text = item.text;
-
-    d.addEventListener("dragstart", (e) => {
-      e.dataTransfer.setData(
-        "text/plain",
-        JSON.stringify({ zone: item.zone, text: item.text }),
-      );
-      d.classList.add("dragging");
-    });
-    d.addEventListener("dragend", () => d.classList.remove("dragging"));
-
+    makeDraggable(d, () => ({ zone: item.zone, text: item.text }));
     dragArea.appendChild(d);
   });
   content.appendChild(dragArea);
@@ -875,23 +810,9 @@ ScreenManager.register("island2", (container) => {
     const itemsContainer = el("div");
     zone.appendChild(itemsContainer);
 
-    zone.addEventListener("dragover", (e) => {
-      e.preventDefault();
-      zone.classList.add("drag-over");
-    });
-    zone.addEventListener("dragleave", () =>
-      zone.classList.remove("drag-over"),
+    makeDropTarget(zone, (data) =>
+      handleDrop(data, zd.id, itemsContainer, counter),
     );
-    zone.addEventListener("drop", (e) => {
-      e.preventDefault();
-      zone.classList.remove("drag-over");
-      try {
-        const data = JSON.parse(e.dataTransfer.getData("text/plain"));
-        handleDrop(data, zd.id, itemsContainer, counter);
-      } catch (err) {
-        console.warn("Drop parse error (zone):", err);
-      }
-    });
 
     zoneElements[zd.id] = { zone, itemsContainer, counter };
     zonesRow.appendChild(zone);
@@ -1013,8 +934,7 @@ ScreenManager.register("island3", (container) => {
 
   // Load theme from Island 1
   const themeName = GameProgress.selected_theme;
-  const popName = GameProgress.selected_population;
-  const themeData = themeName ? getPopulationData(themeName, popName) : null;
+  const themeData = themeName ? getThemeByName(themeName) : null;
 
   if (!themeData || !themeData.pregunta) {
     const feedback0 = el("div", {
@@ -1026,13 +946,7 @@ ScreenManager.register("island3", (container) => {
       el("button", {
         className: "btn-pirate btn-small btn-gold",
         textContent: "← Ir a la Isla 1",
-        style: {
-          animation: "none",
-          opacity: "1",
-          transform: "none",
-          width: "auto",
-          margin: "1rem auto",
-        },
+        style: { ...NO_ANIM, width: "auto", margin: "1rem auto" },
         onClick: () => ScreenManager.show("island1"),
       }),
     );
@@ -1216,8 +1130,7 @@ ScreenManager.register("island4", (container) => {
 
   // Load theme from Island 1
   const themeName = GameProgress.selected_theme;
-  const popName = GameProgress.selected_population;
-  const themeData = themeName ? getPopulationData(themeName, popName) : null;
+  const themeData = themeName ? getThemeByName(themeName) : null;
 
   if (!themeData || !themeData.objetivos) {
     const leftPanel = el("div", {
@@ -1239,13 +1152,7 @@ ScreenManager.register("island4", (container) => {
       el("button", {
         className: "btn-pirate btn-small btn-gold",
         textContent: "← Ir a la Isla 1",
-        style: {
-          animation: "none",
-          opacity: "1",
-          transform: "none",
-          width: "auto",
-          margin: "1rem auto",
-        },
+        style: { ...NO_ANIM, width: "auto", margin: "1rem auto" },
         onClick: () => ScreenManager.show("island1"),
       }),
     );
@@ -1295,7 +1202,7 @@ ScreenManager.register("island4", (container) => {
   });
 
   shuffledKeys.forEach((key) => {
-    const keyEl = el("div", { className: "key-item", draggable: "true" });
+    const keyEl = el("div", { className: "key-item" });
     keyEl.dataset.keyId = key.id;
     const icon = el("img", {
       className: "key-icon",
@@ -1306,13 +1213,7 @@ ScreenManager.register("island4", (container) => {
     keyEl.appendChild(
       el("span", { textContent: key.text, style: { fontSize: "0.83rem" } }),
     );
-
-    keyEl.addEventListener("dragstart", (e) => {
-      e.dataTransfer.setData("text/plain", key.id.toString());
-      keyEl.classList.add("dragging");
-    });
-    keyEl.addEventListener("dragend", () => keyEl.classList.remove("dragging"));
-
+    makeDraggable(keyEl, () => key.id);
     keysContainer.appendChild(keyEl);
   });
   leftPanel.appendChild(keysContainer);
@@ -1405,13 +1306,7 @@ ScreenManager.register("island4", (container) => {
   const verifyBtn = el("button", {
     className: "btn-pirate btn-small btn-gold",
     textContent: "✓ Verificar Orden",
-    style: {
-      animation: "none",
-      opacity: "1",
-      transform: "none",
-      marginTop: "0.5rem",
-      width: "auto",
-    },
+    style: { ...NO_ANIM, marginTop: "0.5rem", width: "auto" },
     onClick: () => {
       if (stepContents.includes(null)) {
         feedback.className = "feedback wrong";
@@ -1542,13 +1437,7 @@ ScreenManager.register("island5", (container) => {
       el("button", {
         className: "btn-pirate btn-small btn-gold",
         textContent: "← Ir a la Isla 1",
-        style: {
-          animation: "none",
-          opacity: "1",
-          transform: "none",
-          width: "auto",
-          margin: "1rem auto",
-        },
+        style: { ...NO_ANIM, width: "auto", margin: "1rem auto" },
         onClick: () => ScreenManager.show("island1"),
       }),
     );
@@ -1800,13 +1689,7 @@ ScreenManager.register("island5", (container) => {
         el("button", {
           className: "btn-pirate btn-small btn-gold",
           textContent: "🔄 Reintentar",
-          style: {
-            animation: "none",
-            opacity: "1",
-            transform: "none",
-            width: "auto",
-            marginTop: "0.6rem",
-          },
+          style: { ...NO_ANIM, width: "auto", marginTop: "0.6rem" },
           onClick: () => {
             playerAnswers.length = 0;
             cards = shuffle([...themeData.justificacion]);
@@ -1921,9 +1804,7 @@ ScreenManager.register("treasure", (container) => {
 
     // Build dynamic summary from theme
     const tName = GameProgress.selected_theme;
-    const tPop = GameProgress.selected_population;
-    const tData = tName ? getPopulationData(tName, tPop) : null;
-    const tThemeData = tName ? getThemeByName(tName) : null;
+    const tData = tName ? getThemeByName(tName) : null;
 
     // Problema section
     let problemaSummary = "<em>No disponible</em>";
@@ -1958,19 +1839,19 @@ ScreenManager.register("treasure", (container) => {
         .join("<br>");
     }
 
-    // Justificación section (theme-level, not population-specific)
+    // Justificación section
     let justSummary = "<em>No disponible</em>";
-    if (tThemeData && tThemeData.justificacion) {
+    if (tData && tData.justificacion) {
       const imp =
-        tThemeData.justificacion
+        tData.justificacion
           .filter((j) => j.tipo === "importancia")
           .map((j) => j.texto)[0] || "";
       const impact =
-        tThemeData.justificacion
+        tData.justificacion
           .filter((j) => j.tipo === "impacto")
           .map((j) => j.texto)[0] || "";
       const util =
-        tThemeData.justificacion
+        tData.justificacion
           .filter((j) => j.tipo === "utilidad")
           .map((j) => j.texto)[0] || "";
       justSummary = `<em>Importancia:</em> ${imp}<br><em>Impacto:</em> ${impact}<br><em>Utilidad:</em> ${util}`;
@@ -2027,12 +1908,7 @@ ScreenManager.register("treasure", (container) => {
       el("button", {
         className: "btn-pirate btn-small btn-green",
         textContent: "🔄 Jugar de Nuevo",
-        style: {
-          animation: "none",
-          opacity: "1",
-          transform: "none",
-          width: "auto",
-        },
+        style: { ...NO_ANIM, width: "auto" },
         onClick: () => {
           GameProgress.reset();
           GameProgress.delete_save();
@@ -2044,12 +1920,7 @@ ScreenManager.register("treasure", (container) => {
       el("button", {
         className: "btn-pirate btn-small btn-blue",
         textContent: "🏠 Menú Principal",
-        style: {
-          animation: "none",
-          opacity: "1",
-          transform: "none",
-          width: "auto",
-        },
+        style: { ...NO_ANIM, width: "auto" },
         onClick: () => ScreenManager.show("menu"),
       }),
     );
