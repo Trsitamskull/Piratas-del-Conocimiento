@@ -77,7 +77,7 @@ const GameProgress = {
     try {
       localStorage.setItem("pirate_research_save", JSON.stringify(data));
     } catch (e) {
-      /* silent */
+      console.warn("Could not save game:", e);
     }
   },
 
@@ -100,6 +100,7 @@ const GameProgress = {
       this.generated_title = d.generated_title || null;
       return true;
     } catch (e) {
+      console.warn("Could not load game:", e);
       return false;
     }
   },
@@ -234,8 +235,8 @@ const Dialog = {
       this.continueEl.classList.add("visible");
       return;
     }
-    this.textEl.textContent += this.currentText[this.charIndex];
     this.charIndex++;
+    this.textEl.textContent = this.currentText.substring(0, this.charIndex);
   },
 
   advance() {
@@ -335,6 +336,25 @@ function el(tag, attrs = {}, children = []) {
       else if (c) e.appendChild(c);
     });
   return e;
+}
+
+function createBackButton(targetScreen = "worldmap") {
+  return el("button", {
+    className: "btn-pirate btn-small btn-red",
+    textContent: "← Volver",
+    style: {
+      position: "absolute",
+      top: "0.5rem",
+      right: "0.5rem",
+      animation: "none",
+      opacity: "1",
+      transform: "none",
+      margin: "0",
+      width: "auto",
+      zIndex: "20",
+    },
+    onClick: () => ScreenManager.show(targetScreen),
+  });
 }
 
 function shuffle(arr) {

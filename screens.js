@@ -497,7 +497,9 @@ ScreenManager.register("island1", (container) => {
         try {
           const data = JSON.parse(e.dataTransfer.getData("text/plain"));
           handleCofreDrop(data, c.id, slot, wordArea);
-        } catch (err) {}
+        } catch (err) {
+          console.warn("Drop parse error (cofre):", err);
+        }
       });
     }
 
@@ -698,24 +700,7 @@ ScreenManager.register("island1", (container) => {
   }
 
   // Back button
-  content.appendChild(
-    el("button", {
-      className: "btn-pirate btn-small btn-red",
-      textContent: "← Volver",
-      style: {
-        position: "absolute",
-        top: "0.5rem",
-        right: "0.5rem",
-        animation: "none",
-        opacity: "1",
-        transform: "none",
-        margin: "0",
-        width: "auto",
-        zIndex: "20",
-      },
-      onClick: () => ScreenManager.show("worldmap"),
-    }),
-  );
+  content.appendChild(createBackButton());
 
   container.appendChild(content);
 
@@ -901,7 +886,9 @@ ScreenManager.register("island2", (container) => {
       try {
         const data = JSON.parse(e.dataTransfer.getData("text/plain"));
         handleDrop(data, zd.id, itemsContainer, counter);
-      } catch (err) {}
+      } catch (err) {
+        console.warn("Drop parse error (zone):", err);
+      }
     });
 
     zoneElements[zd.id] = { zone, itemsContainer, counter };
@@ -977,24 +964,7 @@ ScreenManager.register("island2", (container) => {
   }
 
   // Back button
-  content.appendChild(
-    el("button", {
-      className: "btn-pirate btn-small btn-red",
-      textContent: "← Volver",
-      style: {
-        position: "absolute",
-        top: "0.5rem",
-        right: "0.5rem",
-        animation: "none",
-        opacity: "1",
-        transform: "none",
-        margin: "0",
-        width: "auto",
-        zIndex: "20",
-      },
-      onClick: () => ScreenManager.show("worldmap"),
-    }),
-  );
+  content.appendChild(createBackButton());
 
   container.appendChild(content);
 
@@ -1200,24 +1170,7 @@ ScreenManager.register("island3", (container) => {
   content.appendChild(leversRow);
 
   // Back
-  content.appendChild(
-    el("button", {
-      className: "btn-pirate btn-small btn-red",
-      textContent: "← Volver",
-      style: {
-        position: "absolute",
-        top: "0.5rem",
-        right: "0.5rem",
-        animation: "none",
-        opacity: "1",
-        transform: "none",
-        margin: "0",
-        width: "auto",
-        zIndex: "20",
-      },
-      onClick: () => ScreenManager.show("worldmap"),
-    }),
-  );
+  content.appendChild(createBackButton());
 
   container.appendChild(content);
 
@@ -1264,12 +1217,18 @@ ScreenManager.register("island4", (container) => {
 
   if (!themeData || !themeData.objetivos) {
     const leftPanel = el("div", {
-      style: { flex: "1", display: "flex", flexDirection: "column", gap: "0.5rem" },
+      style: {
+        flex: "1",
+        display: "flex",
+        flexDirection: "column",
+        gap: "0.5rem",
+      },
     });
     leftPanel.appendChild(
       el("div", {
         className: "feedback wrong",
-        textContent: "⚠️ Primero debes completar la Isla 1 para elegir un tema.",
+        textContent:
+          "⚠️ Primero debes completar la Isla 1 para elegir un tema.",
       }),
     );
     leftPanel.appendChild(
@@ -1520,24 +1479,7 @@ ScreenManager.register("island4", (container) => {
   content.appendChild(rightPanel);
 
   // Back
-  content.appendChild(
-    el("button", {
-      className: "btn-pirate btn-small btn-red",
-      textContent: "← Volver",
-      style: {
-        position: "absolute",
-        top: "0.5rem",
-        right: "0.5rem",
-        animation: "none",
-        opacity: "1",
-        transform: "none",
-        margin: "0",
-        width: "auto",
-        zIndex: "20",
-      },
-      onClick: () => ScreenManager.show("worldmap"),
-    }),
-  );
+  content.appendChild(createBackButton());
 
   container.appendChild(content);
 
@@ -1878,24 +1820,7 @@ ScreenManager.register("island5", (container) => {
   }
 
   // Back button
-  content.appendChild(
-    el("button", {
-      className: "btn-pirate btn-small btn-red",
-      textContent: "← Volver",
-      style: {
-        position: "absolute",
-        top: "0.5rem",
-        right: "0.5rem",
-        animation: "none",
-        opacity: "1",
-        transform: "none",
-        margin: "0",
-        width: "auto",
-        zIndex: "20",
-      },
-      onClick: () => ScreenManager.show("worldmap"),
-    }),
-  );
+  content.appendChild(createBackButton());
 
   container.appendChild(content);
 
@@ -1997,9 +1922,18 @@ ScreenManager.register("treasure", (container) => {
     // Problema section
     let problemaSummary = "<em>No disponible</em>";
     if (tData && tData.problema) {
-      const causas = tData.problema.items.filter((i) => i.zone === "causas").map((i) => i.text).join("; ");
-      const prob = tData.problema.items.filter((i) => i.zone === "problema").map((i) => i.text).join("; ");
-      const cons = tData.problema.items.filter((i) => i.zone === "consecuencias").map((i) => i.text).join("; ");
+      const causas = tData.problema.items
+        .filter((i) => i.zone === "causas")
+        .map((i) => i.text)
+        .join("; ");
+      const prob = tData.problema.items
+        .filter((i) => i.zone === "problema")
+        .map((i) => i.text)
+        .join("; ");
+      const cons = tData.problema.items
+        .filter((i) => i.zone === "consecuencias")
+        .map((i) => i.text)
+        .join("; ");
       problemaSummary = `<em>Causas:</em> ${causas}.<br><em>Problema:</em> ${prob}.<br><em>Consecuencias:</em> ${cons}.`;
     }
 
@@ -2013,15 +1947,26 @@ ScreenManager.register("treasure", (container) => {
     // Objetivos section
     let objetivosSummary = "<em>No disponible</em>";
     if (tData && tData.objetivos) {
-      objetivosSummary = tData.objetivos.especificos.map((o, i) => `${i + 1}. ${o.text}`).join("<br>");
+      objetivosSummary = tData.objetivos.especificos
+        .map((o, i) => `${i + 1}. ${o.text}`)
+        .join("<br>");
     }
 
     // Justificación section
     let justSummary = "<em>No disponible</em>";
     if (tData && tData.justificacion) {
-      const imp = tData.justificacion.filter((j) => j.tipo === "importancia").map((j) => j.texto)[0] || "";
-      const impact = tData.justificacion.filter((j) => j.tipo === "impacto").map((j) => j.texto)[0] || "";
-      const util = tData.justificacion.filter((j) => j.tipo === "utilidad").map((j) => j.texto)[0] || "";
+      const imp =
+        tData.justificacion
+          .filter((j) => j.tipo === "importancia")
+          .map((j) => j.texto)[0] || "";
+      const impact =
+        tData.justificacion
+          .filter((j) => j.tipo === "impacto")
+          .map((j) => j.texto)[0] || "";
+      const util =
+        tData.justificacion
+          .filter((j) => j.tipo === "utilidad")
+          .map((j) => j.texto)[0] || "";
       justSummary = `<em>Importancia:</em> ${imp}<br><em>Impacto:</em> ${impact}<br><em>Utilidad:</em> ${util}`;
     }
 
