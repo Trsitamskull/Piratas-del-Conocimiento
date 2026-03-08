@@ -663,6 +663,7 @@ ScreenManager.register("island1", (container) => {
     const title = `${fenomeno.charAt(0).toUpperCase() + fenomeno.slice(1)} de ${tema.toLowerCase()} en ${poblacion.toLowerCase()}`;
 
     GameProgress.selected_theme = selectedTheme;
+    GameProgress.selected_population = poblacion;
     GameProgress.generated_title = title;
 
     titleReveal.style.display = "block";
@@ -750,7 +751,8 @@ ScreenManager.register("island2", (container) => {
 
   // Load theme from Island 1
   const themeName = GameProgress.selected_theme;
-  const themeData = themeName ? getThemeByName(themeName) : null;
+  const popName = GameProgress.selected_population;
+  const themeData = themeName ? getPopulationData(themeName, popName) : null;
 
   if (!themeData || !themeData.problema) {
     feedback.className = "feedback wrong";
@@ -1011,7 +1013,8 @@ ScreenManager.register("island3", (container) => {
 
   // Load theme from Island 1
   const themeName = GameProgress.selected_theme;
-  const themeData = themeName ? getThemeByName(themeName) : null;
+  const popName = GameProgress.selected_population;
+  const themeData = themeName ? getPopulationData(themeName, popName) : null;
 
   if (!themeData || !themeData.pregunta) {
     const feedback0 = el("div", {
@@ -1213,7 +1216,8 @@ ScreenManager.register("island4", (container) => {
 
   // Load theme from Island 1
   const themeName = GameProgress.selected_theme;
-  const themeData = themeName ? getThemeByName(themeName) : null;
+  const popName = GameProgress.selected_population;
+  const themeData = themeName ? getPopulationData(themeName, popName) : null;
 
   if (!themeData || !themeData.objetivos) {
     const leftPanel = el("div", {
@@ -1917,7 +1921,9 @@ ScreenManager.register("treasure", (container) => {
 
     // Build dynamic summary from theme
     const tName = GameProgress.selected_theme;
-    const tData = tName ? getThemeByName(tName) : null;
+    const tPop = GameProgress.selected_population;
+    const tData = tName ? getPopulationData(tName, tPop) : null;
+    const tThemeData = tName ? getThemeByName(tName) : null;
 
     // Problema section
     let problemaSummary = "<em>No disponible</em>";
@@ -1952,19 +1958,19 @@ ScreenManager.register("treasure", (container) => {
         .join("<br>");
     }
 
-    // Justificación section
+    // Justificación section (theme-level, not population-specific)
     let justSummary = "<em>No disponible</em>";
-    if (tData && tData.justificacion) {
+    if (tThemeData && tThemeData.justificacion) {
       const imp =
-        tData.justificacion
+        tThemeData.justificacion
           .filter((j) => j.tipo === "importancia")
           .map((j) => j.texto)[0] || "";
       const impact =
-        tData.justificacion
+        tThemeData.justificacion
           .filter((j) => j.tipo === "impacto")
           .map((j) => j.texto)[0] || "";
       const util =
-        tData.justificacion
+        tThemeData.justificacion
           .filter((j) => j.tipo === "utilidad")
           .map((j) => j.texto)[0] || "";
       justSummary = `<em>Importancia:</em> ${imp}<br><em>Impacto:</em> ${impact}<br><em>Utilidad:</em> ${util}`;
