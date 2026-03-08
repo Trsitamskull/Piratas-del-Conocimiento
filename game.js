@@ -10,12 +10,14 @@ const GameProgress = {
   island_errors: [0, 0, 0, 0, 0],
   island_stars: [0, 0, 0, 0, 0],
   island_names: [
-    "Isla del Catalejo\n(Título)",
-    "Isla del Árbol\n(Problema)",
-    "Isla del Faro\n(Pregunta)",
-    "Isla de la Escalera\n(Objetivos)",
-    "Isla de la Taberna\n(Justificación)",
+    "La Brújula de\nBarbanegra (Título)",
+    "Cueva de los\nCondenados (Problema)",
+    "Ojo del\nKraken (Pregunta)",
+    "Peldaños\nMalditos (Objetivos)",
+    "Puerto del Ron\nSangriento (Justificación)",
   ],
+  selected_theme: null,
+  generated_title: null,
 
   complete_island(index) {
     if (this.islands_completed[index]) return;
@@ -59,6 +61,8 @@ const GameProgress = {
     this.islands_completed = [false, false, false, false, false];
     this.island_errors = [0, 0, 0, 0, 0];
     this.island_stars = [0, 0, 0, 0, 0];
+    this.selected_theme = null;
+    this.generated_title = null;
   },
 
   save_game() {
@@ -67,6 +71,8 @@ const GameProgress = {
       islands_completed: [...this.islands_completed],
       island_errors: [...this.island_errors],
       island_stars: [...this.island_stars],
+      selected_theme: this.selected_theme,
+      generated_title: this.generated_title,
     };
     try {
       localStorage.setItem("pirate_research_save", JSON.stringify(data));
@@ -90,6 +96,8 @@ const GameProgress = {
       ];
       this.island_errors = d.island_errors || [0, 0, 0, 0, 0];
       this.island_stars = d.island_stars || [0, 0, 0, 0, 0];
+      this.selected_theme = d.selected_theme || null;
+      this.generated_title = d.generated_title || null;
       return true;
     } catch (e) {
       return false;

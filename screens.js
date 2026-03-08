@@ -117,24 +117,24 @@ function showInstructions(parent) {
     <h2 style="font-family:'Cinzel',serif;color:var(--gold);text-align:center;margin-bottom:1rem;">📜 Instrucciones</h2>
     <p style="margin-bottom:0.8rem;">Eres un pirata investigador que debe completar 5 islas para encontrar el tesoro del conocimiento.</p>
     <div style="margin-bottom:0.5rem;">
-      <strong style="color:var(--gold);">🔭 Isla 1 – Catalejo (Título):</strong>
-      <span>Usa el catalejo para enfocar el título de investigación correcto.</span>
+      <strong style="color:var(--gold);">🧭 Isla 1 – La Brújula de Barbanegra (Título):</strong>
+      <span>Elige un tema, clasifica las palabras en cofres (Fenómeno, Tema, Población) y construye tu título de investigación.</span>
     </div>
     <div style="margin-bottom:0.5rem;">
-      <strong style="color:var(--gold);">🌳 Isla 2 – Árbol (Problema):</strong>
+      <strong style="color:var(--gold);">💀 Isla 2 – Cueva de los Condenados (Problema):</strong>
       <span>Arrastra las frases a su categoría correcta: Causas, Problema o Consecuencias.</span>
     </div>
     <div style="margin-bottom:0.5rem;">
-      <strong style="color:var(--gold);">🔦 Isla 3 – Faro (Pregunta):</strong>
+      <strong style="color:var(--gold);">🐙 Isla 3 – Ojo del Kraken (Pregunta):</strong>
       <span>Elige la palanca correcta para encender el faro con la pregunta de investigación.</span>
     </div>
     <div style="margin-bottom:0.5rem;">
-      <strong style="color:var(--gold);">🪜 Isla 4 – Escalera (Objetivos):</strong>
+      <strong style="color:var(--gold);">🪜 Isla 4 – Peldaños Malditos (Objetivos):</strong>
       <span>Ordena los objetivos específicos en la secuencia lógica correcta.</span>
     </div>
     <div style="margin-bottom:0.5rem;">
-      <strong style="color:var(--gold);">🍺 Isla 5 – Taberna (Justificación):</strong>
-      <span>Convence a 3 piratas escépticos eligiendo los argumentos correctos.</span>
+      <strong style="color:var(--gold);">🏴‍☠️ Isla 5 – Puerto del Ron Sangriento (Justificación):</strong>
+      <span>Convence a los piratas escépticos eligiendo argumentos de importancia, impacto y utilidad en 3 rondas.</span>
     </div>
     <div style="text-align:center;margin-top:1.2rem;">
       <button class="btn-pirate btn-small btn-red" style="animation:none;opacity:1;transform:none;" onclick="this.closest('.overlay').remove()">Cerrar</button>
@@ -339,179 +339,399 @@ ScreenManager.register("worldmap", (container) => {
   container.appendChild(mapArea);
 });
 
-/* ======================== ISLAND 1 – Catalejo (Title) ======================== */
+/* ======================== ISLAND 1 – La Brújula de Barbanegra (Title) ======================== */
 ScreenManager.register("island1", (container) => {
   container.className = "screen active bg-island-green";
   AudioManager.playMusic("island");
 
-  // Title bar
   container.appendChild(
     el("div", {
       className: "island-title-bar",
       textContent:
-        "🔭 Isla del Catalejo – Encuentra el Título de Investigación",
+        "🧭 La Brújula de Barbanegra – Construye tu Título de Investigación",
     }),
   );
 
-  // Content area
   const content = el("div", {
     style: {
       flex: "1",
       display: "flex",
       flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: "1rem",
+      padding: "0.8rem",
       position: "relative",
+      overflow: "hidden",
     },
   });
 
   const feedback = el("div", {
     className: "feedback info",
     textContent:
-      "Usa el catalejo para enfocar el título de investigación correcto",
+      "Todo investigador comienza con una idea. Elige el tema de tu expedición.",
   });
   content.appendChild(feedback);
 
-  // Zones
-  const zones_data = [
-    {
-      text: "Plásticos\nen el mar",
-      icon: "🌊",
-      correct: true,
-      bg: "linear-gradient(135deg, #1a5a3a, #0e3a25)",
-    },
-    {
-      text: "Humo\nen fábricas",
-      icon: "🏭",
-      correct: false,
-      bg: "linear-gradient(135deg, #4a3a2a, #30251a)",
-    },
-    {
-      text: "Basura\nen calles",
-      icon: "🏙",
-      correct: false,
-      bg: "linear-gradient(135deg, #3a3a4a, #252530)",
-    },
-  ];
+  // === STATE ===
+  let currentStep = "theme-selection"; // theme-selection | word-classification | complete
+  let selectedTheme = null;
+  let themeData = null;
 
-  const zonesRow = el("div", {
+  // === STEP 1: Theme Selection ===
+  const step1 = el("div", {
     style: {
       display: "flex",
-      gap: "1rem",
-      marginTop: "1.5rem",
-      width: "100%",
-      maxWidth: "800px",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: "0.5rem",
+      flex: "1",
     },
   });
 
-  let completed = false;
+  step1.appendChild(
+    el("div", {
+      className: "panel-dark",
+      style: { padding: "0.6rem 1rem", textAlign: "center", maxWidth: "600px" },
+      innerHTML:
+        '<div style="font-family:\'Cinzel\',serif;color:var(--gold);font-size:0.9rem;">📜 Pergamino de Temas</div><div style="font-size:0.85rem;color:var(--parchment-dark);margin-top:0.3rem;">Selecciona un tema para tu investigación:</div>',
+    }),
+  );
 
-  zones_data.forEach((zone, idx) => {
-    const btn = el("div", {
-      className: "zone-btn",
-      style: { background: zone.bg },
+  const themeGrid = el("div", { className: "theme-grid" });
+  const themeNames = THEME_DB.map((t) => t.name);
+
+  let selectedBtn = null;
+  themeNames.forEach((name) => {
+    const btn = el("button", {
+      className: "theme-btn",
+      textContent: name,
+      onClick: () => {
+        if (selectedBtn) selectedBtn.classList.remove("selected");
+        btn.classList.add("selected");
+        selectedBtn = btn;
+        selectedTheme = name;
+        exploreBtn.disabled = false;
+        exploreBtn.style.opacity = "1";
+        feedback.className = "feedback info";
+        feedback.textContent = `Tema seleccionado: "${name}". Presiona "Explorar ideas".`;
+      },
     });
-    btn.appendChild(
-      el("span", { className: "zone-icon", textContent: zone.icon }),
+    themeGrid.appendChild(btn);
+  });
+  step1.appendChild(themeGrid);
+
+  const exploreBtn = el("button", {
+    className: "btn-pirate btn-small btn-gold",
+    textContent: "🔍 Explorar ideas",
+    disabled: true,
+    style: {
+      animation: "none",
+      opacity: "0.5",
+      transform: "none",
+      width: "auto",
+      marginTop: "0.3rem",
+    },
+    onClick: () => {
+      AudioManager.playSFX("click");
+      goToStep2();
+    },
+  });
+  step1.appendChild(exploreBtn);
+  content.appendChild(step1);
+
+  // === STEP 2: Word Classification ===
+  const step2 = el("div", {
+    style: {
+      display: "none",
+      flexDirection: "column",
+      gap: "0.4rem",
+      flex: "1",
+    },
+  });
+
+  // Cofres row
+  const cofreRow = el("div", { className: "cofre-row" });
+  const cofres = {};
+  const cofreNames = [
+    { id: "fenomeno", label: "Fenómeno / Enfoque" },
+    { id: "tema", label: "Tema" },
+    { id: "poblacion", label: "Población" },
+  ];
+
+  cofreNames.forEach((c) => {
+    const slot = el("div", { className: "cofre-slot" });
+    slot.dataset.cofreId = c.id;
+
+    slot.appendChild(
+      el("img", {
+        src: "assets/objects/cofre_causas.png",
+        alt: "cofre",
+        style: {
+          width: "40px",
+          height: "40px",
+          objectFit: "contain",
+          imageRendering: "pixelated",
+        },
+      }),
     );
-    btn.appendChild(el("span", { textContent: zone.text.replace("\n", " ") }));
+    slot.appendChild(
+      el("div", { className: "cofre-label", textContent: c.label }),
+    );
 
-    btn.addEventListener("click", () => {
-      if (completed || btn.classList.contains("wrong")) return;
-      if (zone.correct) {
-        btn.classList.add("correct");
-        completed = true;
-        feedback.className = "feedback correct";
-        feedback.textContent =
-          "¡Correcto! El título enfocado es sobre investigación marina.";
-        AudioManager.playSFX("correct");
-
-        // Show dialog then return
-        Dialog.showSequence(
-          [
-            {
-              name: "🧭 Capitán",
-              text: "¡Excelente ojo, marinero! Has enfocado el tema correcto.",
-            },
-            {
-              name: "🧭 Capitán",
-              text: 'El título de investigación es: "Impacto de los plásticos en las especies marinas de la costa colombiana"',
-            },
-            {
-              name: "🧭 Capitán",
-              text: "Un buen título debe ser específico, claro y delimitar el alcance del estudio. ¡Primer fragmento obtenido!",
-            },
-          ],
-          () => {
-            AudioManager.playSFX("complete");
-            GameProgress.complete_island(0);
-            ScreenManager.show("worldmap");
-          },
-        );
-      } else {
-        btn.classList.add("wrong");
-        GameProgress.record_error(0);
-        screenShake();
-        AudioManager.playSFX("wrong");
-        feedback.className = "feedback wrong";
-        feedback.textContent =
-          "✖ Ese tema es muy general. Busca algo más específico sobre investigación marina.";
-      }
+    const wordArea = el("div", {
+      className: "cofre-word",
+      style: { display: "none" },
     });
-    zonesRow.appendChild(btn);
-  });
+    slot.appendChild(wordArea);
 
-  content.appendChild(zonesRow);
+    // Drag events (not for tema cofre — auto-filled)
+    if (c.id !== "tema") {
+      slot.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        slot.classList.add("drag-over");
+      });
+      slot.addEventListener("dragleave", () =>
+        slot.classList.remove("drag-over"),
+      );
+      slot.addEventListener("drop", (e) => {
+        e.preventDefault();
+        slot.classList.remove("drag-over");
+        try {
+          const data = JSON.parse(e.dataTransfer.getData("text/plain"));
+          handleCofreDrop(data, c.id, slot, wordArea);
+        } catch (err) {}
+      });
+    }
 
-  // Catalejo following cursor
-  const catalejo = el("img", {
-    className: "catalejo-cursor",
-    src: "assets/sprites/objects/catalejo.png",
-    alt: "catalejo",
+    cofres[c.id] = { slot, wordArea, word: null };
+    cofreRow.appendChild(slot);
   });
-  content.appendChild(catalejo);
+  step2.appendChild(cofreRow);
 
-  content.addEventListener("mousemove", (e) => {
-    const rect = content.getBoundingClientRect();
-    catalejo.style.left = e.clientX - rect.left - 25 + "px";
-    catalejo.style.top = e.clientY - rect.top - 25 + "px";
+  // Word bank
+  step2.appendChild(
+    el("div", {
+      style: {
+        textAlign: "center",
+        fontSize: "0.85rem",
+        color: "var(--gold)",
+        fontFamily: "'Cinzel',serif",
+      },
+      textContent: "💡 Banco de Ideas — Arrastra las palabras a los cofres",
+    }),
+  );
+
+  const wordBank = el("div", { className: "word-bank" });
+  step2.appendChild(wordBank);
+  content.appendChild(step2);
+
+  // === STEP 3: Title reveal (built inside step2) ===
+  const titleReveal = el("div", {
+    className: "panel-parchment",
+    style: {
+      display: "none",
+      textAlign: "center",
+      maxWidth: "650px",
+      margin: "0.5rem auto",
+      padding: "1rem",
+    },
   });
+  step2.appendChild(titleReveal);
+
+  // === FUNCTIONS ===
+  function goToStep2() {
+    currentStep = "word-classification";
+    themeData = getThemeByName(selectedTheme);
+    if (!themeData) return;
+
+    step1.style.display = "none";
+    step2.style.display = "flex";
+
+    // Auto-fill tema cofre
+    cofres.tema.word = selectedTheme;
+    cofres.tema.wordArea.textContent = selectedTheme;
+    cofres.tema.wordArea.style.display = "block";
+    cofres.tema.slot.classList.add("auto-filled");
+
+    // Generate 18 word cards
+    const allWords = [
+      ...themeData.fenomenos.map((w) => ({ text: w, type: "fenomeno" })),
+      ...themeData.poblaciones.map((w) => ({ text: w, type: "poblacion" })),
+      ...themeData.distractores.map((w) => ({ text: w, type: "distractor" })),
+    ];
+    const shuffled = shuffle(allWords);
+
+    wordBank.innerHTML = "";
+    shuffled.forEach((w) => {
+      const card = el("div", {
+        className: "word-card",
+        textContent: w.text,
+        draggable: "true",
+      });
+      card.dataset.type = w.type;
+      card.dataset.text = w.text;
+
+      card.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData(
+          "text/plain",
+          JSON.stringify({ text: w.text, type: w.type }),
+        );
+        card.classList.add("dragging");
+      });
+      card.addEventListener("dragend", () => card.classList.remove("dragging"));
+
+      wordBank.appendChild(card);
+    });
+
+    feedback.className = "feedback info";
+    feedback.textContent =
+      "Arrastra una palabra de fenómeno y una de población a sus cofres.";
+  }
+
+  function handleCofreDrop(data, cofreId, slot, wordArea) {
+    // Validate: is this word the correct type for this cofre?
+    const validType = cofreId; // "fenomeno" or "poblacion"
+    if (data.type === validType) {
+      // If cofre already has a word, put the old one back
+      if (cofres[cofreId].word) {
+        returnWordToBank(cofres[cofreId].word);
+      }
+      cofres[cofreId].word = data.text;
+      wordArea.textContent = data.text;
+      wordArea.style.display = "block";
+      slot.classList.add("filled");
+
+      // Remove card from bank
+      const card = wordBank.querySelector(
+        `[data-text="${CSS.escape(data.text)}"]`,
+      );
+      if (card) card.remove();
+
+      AudioManager.playSFX("correct");
+      feedback.className = "feedback correct";
+      feedback.textContent = `✓ ¡"${data.text}" clasificado correctamente!`;
+
+      // Check if both cofres are filled
+      if (cofres.fenomeno.word && cofres.poblacion.word) {
+        buildTitle();
+      }
+    } else {
+      // Wrong classification
+      GameProgress.record_error(0);
+      screenShake();
+      AudioManager.playSFX("wrong");
+      feedback.className = "feedback wrong";
+      if (data.type === "distractor") {
+        feedback.textContent = `✖ "${data.text}" no es un fenómeno ni una población. ¡Intenta con otra palabra!`;
+      } else {
+        feedback.textContent = `✖ "${data.text}" no corresponde a este cofre. Prueba en otro.`;
+      }
+    }
+  }
+
+  function returnWordToBank(text) {
+    // Re-add a word card to the bank
+    const existingData = [
+      ...themeData.fenomenos.map((w) => ({ text: w, type: "fenomeno" })),
+      ...themeData.poblaciones.map((w) => ({ text: w, type: "poblacion" })),
+      ...themeData.distractores.map((w) => ({ text: w, type: "distractor" })),
+    ].find((w) => w.text === text);
+    if (!existingData) return;
+
+    const card = el("div", {
+      className: "word-card",
+      textContent: text,
+      draggable: "true",
+    });
+    card.dataset.type = existingData.type;
+    card.dataset.text = text;
+    card.addEventListener("dragstart", (e) => {
+      e.dataTransfer.setData(
+        "text/plain",
+        JSON.stringify({ text, type: existingData.type }),
+      );
+      card.classList.add("dragging");
+    });
+    card.addEventListener("dragend", () => card.classList.remove("dragging"));
+    wordBank.appendChild(card);
+  }
+
+  function buildTitle() {
+    const fenomeno = cofres.fenomeno.word;
+    const tema = cofres.tema.word;
+    const poblacion = cofres.poblacion.word;
+    const title = `${fenomeno.charAt(0).toUpperCase() + fenomeno.slice(1)} de ${tema.toLowerCase()} en ${poblacion.toLowerCase()}`;
+
+    GameProgress.selected_theme = selectedTheme;
+    GameProgress.generated_title = title;
+
+    titleReveal.style.display = "block";
+    titleReveal.innerHTML = `
+      <div style="font-family:'Pirata One',serif;color:#5a3a10;font-size:1.2rem;margin-bottom:0.5rem;">📜 Título Construido</div>
+      <div style="font-size:1.1rem;color:#3a2a10;font-weight:700;margin-bottom:0.5rem;">"${title}"</div>
+      <div style="font-size:0.85rem;color:#6a5a30;">[Fenómeno] de [Tema] en [Población]</div>
+    `;
+
+    AudioManager.playSFX("complete");
+    feedback.className = "feedback gold";
+    feedback.textContent = "🧭✨ ¡Título de investigación construido!";
+
+    Dialog.showSequence(
+      [
+        {
+          name: "🧭 Pirata Sabio",
+          text: `¡Excelente, marinero! Has construido tu título: "${title}"`,
+        },
+        {
+          name: "🧭 Pirata Sabio",
+          text: "Un buen título indica QUÉ se investiga (fenómeno), SOBRE QUÉ (tema) y EN QUIÉN (población).",
+        },
+        {
+          name: "🧭 Pirata Sabio",
+          text: "¡Primer fragmento del mapa obtenido! Continúa tu aventura.",
+        },
+      ],
+      () => {
+        GameProgress.complete_island(0);
+        GameProgress.save_game();
+        ScreenManager.show("worldmap");
+      },
+    );
+  }
 
   // Back button
-  const backBtn = el("button", {
-    className: "btn-pirate btn-small btn-red",
-    textContent: "← Volver al Mapa",
-    style: {
-      position: "absolute",
-      top: "0.5rem",
-      right: "0.5rem",
-      animation: "none",
-      opacity: "1",
-      transform: "none",
-      margin: "0",
-      width: "auto",
-      zIndex: "20",
-    },
-    onClick: () => ScreenManager.show("worldmap"),
-  });
-  content.appendChild(backBtn);
+  content.appendChild(
+    el("button", {
+      className: "btn-pirate btn-small btn-red",
+      textContent: "← Volver",
+      style: {
+        position: "absolute",
+        top: "0.5rem",
+        right: "0.5rem",
+        animation: "none",
+        opacity: "1",
+        transform: "none",
+        margin: "0",
+        width: "auto",
+        zIndex: "20",
+      },
+      onClick: () => ScreenManager.show("worldmap"),
+    }),
+  );
 
   container.appendChild(content);
 
   // Intro dialog
   Dialog.showSequence([
     {
-      name: "🧭 Capitán",
-      text: "¡Bienvenido a la Isla del Catalejo, marinero!",
+      name: "🧭 Pirata Sabio",
+      text: "¡Bienvenido a La Brújula de Barbanegra, marinero!",
     },
     {
-      name: "🧭 Capitán",
-      text: "Aquí aprenderás a identificar un buen título de investigación.",
+      name: "🧭 Pirata Sabio",
+      text: "Todo investigador comienza con una idea. Elige el tema de tu expedición.",
     },
     {
-      name: "🧭 Capitán",
-      text: "Usa el catalejo para enfocar la zona correcta del mapa. ¡Solo una tiene el tema adecuado!",
+      name: "🧭 Pirata Sabio",
+      text: "Luego clasificarás las palabras en tres cofres: Fenómeno, Tema y Población para construir tu título de investigación.",
     },
   ]);
 });
@@ -524,7 +744,7 @@ ScreenManager.register("island2", (container) => {
   container.appendChild(
     el("div", {
       className: "island-title-bar",
-      textContent: "🌳 Isla del Árbol – Clasifica el Problema de Investigación",
+      textContent: "💀 Cueva de los Condenados – Clasifica el Problema de Investigación",
     }),
   );
 
@@ -785,7 +1005,7 @@ ScreenManager.register("island3", (container) => {
   container.appendChild(
     el("div", {
       className: "island-title-bar",
-      textContent: "🔦 Isla del Faro – Formula la Pregunta de Investigación",
+      textContent: "� Ojo del Kraken – Formula la Pregunta de Investigación",
     }),
   );
 
@@ -989,7 +1209,7 @@ ScreenManager.register("island4", (container) => {
   container.appendChild(
     el("div", {
       className: "island-title-bar",
-      textContent: "🪜 Isla de la Escalera – Ordena los Objetivos Específicos",
+      textContent: "🪜 Peldaños Malditos – Ordena los Objetivos Específicos",
     }),
   );
 
@@ -1277,7 +1497,7 @@ ScreenManager.register("island4", (container) => {
   ]);
 });
 
-/* ======================== ISLAND 5 – Taberna (Justification) ======================== */
+/* ======================== ISLAND 5 – Puerto del Ron Sangriento (Justification) ======================== */
 ScreenManager.register("island5", (container) => {
   container.className = "screen active bg-tavern";
   AudioManager.playMusic("island");
@@ -1285,7 +1505,7 @@ ScreenManager.register("island5", (container) => {
   container.appendChild(
     el("div", {
       className: "island-title-bar",
-      textContent: "🍺 Isla de la Taberna – Justifica tu Investigación",
+      textContent: "🏴‍☠️ Puerto del Ron Sangriento – Justifica tu Investigación",
     }),
   );
 
@@ -1296,202 +1516,308 @@ ScreenManager.register("island5", (container) => {
       flexDirection: "column",
       padding: "0.8rem",
       position: "relative",
-      gap: "0.5rem",
+      gap: "0.4rem",
+      overflow: "auto",
     },
   });
 
-  const feedback = el("div", {
-    className: "feedback info",
-    textContent:
-      "Convence a los 3 piratas escépticos con los argumentos correctos",
-  });
+  const feedback = el("div", { className: "feedback info" });
   content.appendChild(feedback);
 
-  const counter = el("div", {
-    className: "text-center",
-    style: {
-      fontFamily: "'Cinzel',serif",
-      color: "var(--gold)",
-      fontSize: "0.95rem",
-    },
-    textContent: "Piratas convencidos: 0/3",
-  });
-  content.appendChild(counter);
+  // Load theme from Island 1
+  const themeName = GameProgress.selected_theme;
+  const themeData = themeName ? getThemeByName(themeName) : null;
 
-  // Pirates data
-  const pirates = [
+  if (!themeData) {
+    feedback.className = "feedback wrong";
+    feedback.textContent =
+      "⚠️ Primero debes completar la Isla 1 para elegir un tema.";
+    content.appendChild(
+      el("button", {
+        className: "btn-pirate btn-small btn-gold",
+        textContent: "← Ir a la Isla 1",
+        style: {
+          animation: "none",
+          opacity: "1",
+          transform: "none",
+          width: "auto",
+          margin: "1rem auto",
+        },
+        onClick: () => ScreenManager.show("island1"),
+      }),
+    );
+    container.appendChild(content);
+    return;
+  }
+
+  // === STATE ===
+  const rounds = [
+    {
+      question: `¿Por qué es importante investigar sobre "${themeName}"?`,
+      expectedType: "importancia",
+      pirate: 0,
+    },
+    {
+      question: `¿A quién afecta "${themeName}" o por qué es un problema actual?`,
+      expectedType: "impacto",
+      pirate: 1,
+    },
+    {
+      question: `¿Para qué serviría investigar "${themeName}"?`,
+      expectedType: "utilidad",
+      pirate: 0,
+    },
+  ];
+  let currentRound = 0;
+  const playerAnswers = []; // { texto, tipo } per round
+  let cards = shuffle([...themeData.justificacion]);
+
+  // === PIRATES ROW ===
+  const piratesRow = el("div", {
+    style: {
+      display: "flex",
+      gap: "0.8rem",
+      justifyContent: "center",
+      marginBottom: "0.3rem",
+    },
+  });
+
+  const pirateSprites = [
     {
       name: "Pirata Teórico",
       sprite: "assets/characters/npc_pirata_teorico.png",
-      complaint: '"¿Para qué sirve esta investigación en la ciencia?"',
-      correct:
-        "Aporta nuevos datos sobre microplásticos que complementan estudios previos de biología marina.",
-      wrong: [
-        "Porque el profesor lo pidió como tarea.",
-        "Para ganar dinero con la investigación.",
-      ],
     },
     {
       name: "Pirata Indiferente",
       sprite: "assets/characters/npc_pirata_indiferente.png",
-      complaint: '"¿A quién le importa? No afecta a nadie..."',
-      correct:
-        "Afecta a miles de familias costeras que dependen de la pesca para sobrevivir.",
-      wrong: [
-        "Tienes razón, probablemente no importa mucho.",
-        "Solo les importa a los científicos aburridos.",
-      ],
-    },
-    {
-      name: "Tabernero",
-      sprite: "assets/characters/npc_tabernero.png",
-      complaint: '"¿Y esto para qué sirve en la práctica?"',
-      correct:
-        "Los resultados pueden usarse para crear políticas de protección costera y programas de limpieza.",
-      wrong: [
-        "No sirve para nada práctico, solo es teoría.",
-        "Para escribir un artículo que nadie leerá.",
-      ],
     },
   ];
 
-  let convinced = 0;
-  let activePirateIdx = -1;
-
-  // Pirates cards row
-  const cardsRow = el("div", {
-    style: { display: "flex", gap: "0.5rem", justifyContent: "center" },
-  });
-
-  const pirateCards = [];
-
-  pirates.forEach((pirate, idx) => {
+  const pirateEls = pirateSprites.map((p) => {
     const card = el("div", {
       className: "pirate-card",
-      style: { background: "rgba(50,35,20,0.8)" },
+      style: { background: "rgba(50,35,20,0.8)", maxWidth: "160px" },
     });
-
-    const img = el("img", {
-      className: "pirate-icon",
-      src: pirate.sprite,
-      alt: pirate.name,
-    });
-    card.appendChild(img);
     card.appendChild(
-      el("div", { className: "pirate-name", textContent: pirate.name }),
+      el("img", { className: "pirate-icon", src: p.sprite, alt: p.name }),
     );
-    const complaintEl = el("div", {
+    card.appendChild(
+      el("div", { className: "pirate-name", textContent: p.name }),
+    );
+    const speech = el("div", {
       className: "pirate-complaint",
-      textContent: pirate.complaint,
+      style: { fontSize: "0.75rem", minHeight: "2.2em" },
     });
-    card.appendChild(complaintEl);
-
-    const talkBtn = el("button", {
-      className: "pirate-talk-btn",
-      textContent: "💬 Hablar",
-      onClick: () => showPirateOptions(idx),
-    });
-    card.appendChild(talkBtn);
-
-    pirateCards.push({ card, complaintEl, talkBtn, convinced: false });
-    cardsRow.appendChild(card);
+    card.appendChild(speech);
+    piratesRow.appendChild(card);
+    return { card, speech };
   });
-  content.appendChild(cardsRow);
+  content.appendChild(piratesRow);
 
-  // Options panel
-  const optionsPanel = el("div", {
+  // Round question display
+  const roundDisplay = el("div", {
+    className: "round-question",
+    style: { display: "none" },
+  });
+  content.appendChild(roundDisplay);
+
+  // Player answer display
+  const answerDisplay = el("div", {
+    className: "round-answer",
+    style: { display: "none" },
+  });
+  content.appendChild(answerDisplay);
+
+  // Argument card bank
+  const bankLabel = el("div", {
+    style: {
+      textAlign: "center",
+      fontSize: "0.85rem",
+      color: "var(--gold)",
+      fontFamily: "'Cinzel',serif",
+    },
+    textContent: "📜 Banco de Argumentos — Elige uno para responder",
+  });
+  content.appendChild(bankLabel);
+
+  const argBank = el("div", { className: "arg-bank" });
+  content.appendChild(argBank);
+
+  // Results panel (hidden until evaluation)
+  const resultsPanel = el("div", {
     className: "panel-dark",
-    style: { display: "none", marginTop: "0.3rem" },
+    style: { display: "none", textAlign: "center", padding: "0.8rem" },
   });
-  content.appendChild(optionsPanel);
+  content.appendChild(resultsPanel);
 
-  function showPirateOptions(idx) {
-    if (pirateCards[idx].convinced) return;
-    activePirateIdx = idx;
-    const pirate = pirates[idx];
-    optionsPanel.style.display = "block";
-    optionsPanel.innerHTML = "";
-    optionsPanel.appendChild(
-      el("div", {
-        style: {
-          fontFamily: "'Cinzel',serif",
-          color: "var(--gold)",
-          marginBottom: "0.5rem",
-          fontSize: "0.9rem",
-        },
-        textContent: `Elige tu argumento para ${pirate.name}:`,
-      }),
-    );
-
-    const allOptions = shuffle([
-      { text: pirate.correct, correct: true },
-      ...pirate.wrong.map((w) => ({ text: w, correct: false })),
-    ]);
-
-    allOptions.forEach((opt) => {
-      const btn = el("button", {
-        className: "option-btn",
-        textContent: opt.text,
-        onClick: () => handlePirateAnswer(idx, opt.correct),
+  // === RENDER FUNCTIONS ===
+  function renderCards() {
+    argBank.innerHTML = "";
+    cards.forEach((c, i) => {
+      const card = el("button", {
+        className: "arg-card",
+        textContent: c.texto,
+        onClick: () => selectCard(i),
       });
-      optionsPanel.appendChild(btn);
+      argBank.appendChild(card);
     });
   }
 
-  function handlePirateAnswer(idx, correct) {
-    optionsPanel.style.display = "none";
-    if (correct) {
-      pirateCards[idx].convinced = true;
-      pirateCards[idx].card.classList.add("convinced");
-      pirateCards[idx].complaintEl.textContent = "¡Convencido! 👍";
-      pirateCards[idx].talkBtn.disabled = true;
-      pirateCards[idx].talkBtn.textContent = "✓ Convencido";
-      convinced++;
-      counter.textContent = `Piratas convencidos: ${convinced}/3`;
-      feedback.className = "feedback correct";
-      feedback.textContent = `✓ ¡${pirates[idx].name} ha sido convencido!`;
-      AudioManager.playSFX("correct");
+  function startRound(roundIdx) {
+    currentRound = roundIdx;
+    const round = rounds[roundIdx];
 
-      if (convinced === 3) {
-        handleIsland5Complete();
-      }
-    } else {
-      GameProgress.record_error(4);
-      screenShake();
-      AudioManager.playSFX("wrong");
-      feedback.className = "feedback wrong";
+    // Pirate asks the question
+    const pirateEl = pirateEls[round.pirate];
+    pirateEl.card.classList.add("speaking");
+    pirateEl.speech.textContent = round.question;
+
+    // Mute the other pirate
+    const otherIdx = round.pirate === 0 ? 1 : 0;
+    pirateEls[otherIdx].card.classList.remove("speaking");
+    pirateEls[otherIdx].speech.textContent = "...";
+
+    roundDisplay.style.display = "block";
+    roundDisplay.innerHTML = `<strong>Ronda ${roundIdx + 1}/3:</strong> ${round.question}`;
+
+    answerDisplay.style.display = "none";
+    answerDisplay.className = "round-answer";
+
+    feedback.className = "feedback info";
+    feedback.textContent = `Selecciona un argumento del banco para la ronda ${roundIdx + 1}.`;
+
+    renderCards();
+  }
+
+  function selectCard(cardIdx) {
+    const chosen = cards[cardIdx];
+    playerAnswers.push({ texto: chosen.texto, tipo: chosen.tipo });
+
+    // Show the answer
+    answerDisplay.style.display = "block";
+    answerDisplay.textContent = `Tu respuesta: "${chosen.texto}"`;
+
+    // Remove used card from bank
+    cards.splice(cardIdx, 1);
+    argBank.innerHTML = "";
+    bankLabel.style.display = "none";
+
+    AudioManager.playSFX("click");
+
+    if (currentRound < 2) {
+      // Next round after a brief pause
+      feedback.className = "feedback info";
       feedback.textContent =
-        "✖ Ese argumento no es convincente. ¡Intenta con otro!";
+        "Respuesta registrada. Pasando a la siguiente ronda...";
+      setTimeout(() => {
+        answerDisplay.style.display = "none";
+        startRound(currentRound + 1);
+        bankLabel.style.display = "block";
+      }, 1500);
+    } else {
+      // All 3 rounds done — evaluate
+      feedback.className = "feedback info";
+      feedback.textContent =
+        "Todas las rondas completadas. Evaluando argumentos...";
+      setTimeout(() => evaluateAnswers(), 1500);
     }
   }
 
-  function handleIsland5Complete() {
-    feedback.className = "feedback gold";
-    feedback.textContent = "🍺✨ ¡Todos los piratas están convencidos!";
-    Dialog.showSequence(
-      [
-        {
-          name: "🍺 Tabernero",
-          text: "¡Increíble! Has convencido a todos en la taberna.",
+  function evaluateAnswers() {
+    argBank.innerHTML = "";
+    bankLabel.style.display = "none";
+    roundDisplay.style.display = "none";
+    answerDisplay.style.display = "none";
+
+    let correctCount = 0;
+    let resultHTML =
+      "<div style=\"font-family:'Cinzel',serif;color:var(--gold);font-size:1rem;margin-bottom:0.5rem;\">⚖️ Evaluación de Justificación</div>";
+
+    rounds.forEach((round, i) => {
+      const answer = playerAnswers[i];
+      const isCorrect = answer.tipo === round.expectedType;
+      if (isCorrect) correctCount++;
+      resultHTML += `<div style="margin:0.4rem 0;padding:0.4rem;border-radius:6px;background:${isCorrect ? "rgba(80,200,80,0.15)" : "rgba(200,80,80,0.15)"};">`;
+      resultHTML += `<div style="font-size:0.8rem;color:var(--gold);">Ronda ${i + 1} — ${isCorrect ? "✓ Correcto" : "✖ Incorrecto"}</div>`;
+      resultHTML += `<div style="font-size:0.75rem;color:var(--parchment-dark);">Tu argumento: "${answer.texto}"</div>`;
+      resultHTML += `<div style="font-size:0.7rem;color:#aaa;">Categoría: ${answer.tipo} (se esperaba: ${round.expectedType})</div>`;
+      resultHTML += `</div>`;
+    });
+
+    resultsPanel.innerHTML = resultHTML;
+    resultsPanel.style.display = "block";
+
+    if (correctCount === 3) {
+      // All correct — pirates convinced!
+      pirateEls.forEach((p) => {
+        p.card.classList.add("convinced");
+        p.speech.textContent = "¡Convencido! 👍";
+      });
+
+      AudioManager.playSFX("complete");
+      feedback.className = "feedback gold";
+      feedback.textContent =
+        "🏴‍☠️✨ ¡Justificación perfecta! Todos los piratas están convencidos.";
+
+      Dialog.showSequence(
+        [
+          {
+            name: "🏴‍☠️ Pirata Teórico",
+            text: "¡Impresionante, marinero! Has justificado tu investigación con argumentos sólidos.",
+          },
+          {
+            name: "🏴‍☠️ Pirata Indiferente",
+            text: "Reconozco que esta investigación tiene valor. Me has convencido.",
+          },
+          {
+            name: "🏴‍☠️ Pirata Teórico",
+            text: "La JUSTIFICACIÓN tiene tres pilares: IMPORTANCIA (aporta al conocimiento), IMPACTO (afecta a la sociedad) y UTILIDAD (tiene aplicaciones prácticas).",
+          },
+          {
+            name: "🏴‍☠️ Pirata Teórico",
+            text: "¡Último fragmento del mapa obtenido! El tesoro te espera.",
+          },
+        ],
+        () => {
+          GameProgress.complete_island(4);
+          GameProgress.save_game();
+          ScreenManager.show("worldmap");
         },
-        {
-          name: "🍺 Tabernero",
-          text: "La JUSTIFICACIÓN tiene tres pilares: relevancia TEÓRICA (aporta al conocimiento), SOCIAL (beneficia a la comunidad) y PRÁCTICA (tiene aplicaciones reales).",
-        },
-        {
-          name: "🍺 Tabernero",
-          text: "¡Último fragmento obtenido! Ahora puedes buscar el tesoro.",
-        },
-      ],
-      () => {
-        AudioManager.playSFX("complete");
-        GameProgress.complete_island(4);
-        ScreenManager.show("worldmap");
-      },
-    );
+      );
+    } else {
+      // Not all correct — retry
+      AudioManager.playSFX("wrong");
+      feedback.className = "feedback wrong";
+      feedback.textContent = `Acertaste ${correctCount}/3 rondas. Los piratas aún tienen dudas. ¡Inténtalo de nuevo!`;
+
+      resultsPanel.appendChild(
+        el("button", {
+          className: "btn-pirate btn-small btn-gold",
+          textContent: "🔄 Reintentar",
+          style: {
+            animation: "none",
+            opacity: "1",
+            transform: "none",
+            width: "auto",
+            marginTop: "0.6rem",
+          },
+          onClick: () => {
+            playerAnswers.length = 0;
+            cards = shuffle([...themeData.justificacion]);
+            resultsPanel.style.display = "none";
+            bankLabel.style.display = "block";
+            pirateEls.forEach((p) => {
+              p.card.classList.remove("convinced", "speaking");
+              p.speech.textContent = "";
+            });
+            startRound(0);
+          },
+        }),
+      );
+    }
   }
 
-  // Back
+  // Back button
   content.appendChild(
     el("button", {
       className: "btn-pirate btn-small btn-red",
@@ -1513,17 +1839,24 @@ ScreenManager.register("island5", (container) => {
 
   container.appendChild(content);
 
-  Dialog.showSequence([
-    { name: "🍺 Tabernero", text: "¡Bienvenido a mi taberna, investigador!" },
-    {
-      name: "🍺 Tabernero",
-      text: "Hay tres piratas escépticos que no creen en tu investigación.",
-    },
-    {
-      name: "🍺 Tabernero",
-      text: "Habla con cada uno y elige el argumento correcto para convencerlos. ¡Demuestra por qué tu investigación vale la pena!",
-    },
-  ]);
+  // Intro: pirates express doubts, then start round 1
+  Dialog.showSequence(
+    [
+      {
+        name: "🏴‍☠️ Pirata Teórico",
+        text: `¿"${themeName}"? ¡Bah! No veo por qué alguien investigaría eso.`,
+      },
+      {
+        name: "🏴‍☠️ Pirata Indiferente",
+        text: "A nadie le importa. Convéncenos de que vale la pena o no saldrás del puerto.",
+      },
+      {
+        name: "🏴‍☠️ Pirata Teórico",
+        text: "Tendrás tres rondas para darnos argumentos de importancia, impacto y utilidad. ¡Elige sabiamente!",
+      },
+    ],
+    () => startRound(0),
+  );
 });
 
 /* ======================== TREASURE SCREEN ======================== */
@@ -1613,17 +1946,18 @@ ScreenManager.register("treasure", (container) => {
         📜 Pergamino del Conocimiento
       </h3>
       <div style="margin-bottom:0.6rem;">
-        <strong style="color:#8a5a20;">🔭 Título de Investigación:</strong><br>
-        "Impacto de los plásticos en las especies marinas de la costa colombiana"
+        <strong style="color:#8a5a20;">🧭 Título de Investigación:</strong><br>
+        "${GameProgress.generated_title || "Título no generado"}"
+        ${GameProgress.selected_theme ? `<br><span style="font-size:0.8rem;color:#888;">(Tema: ${GameProgress.selected_theme})</span>` : ""}
       </div>
       <div style="margin-bottom:0.6rem;">
-        <strong style="color:#8a5a20;">🌳 Planteamiento del Problema:</strong><br>
+        <strong style="color:#8a5a20;">💀 Planteamiento del Problema:</strong><br>
         <em>Causas:</em> Falta de educación ambiental, uso excesivo de plástico.<br>
         <em>Problema:</em> Alta concentración de plásticos afectando fauna marina.<br>
         <em>Consecuencias:</em> Muerte de peces, daño al ecosistema.
       </div>
       <div style="margin-bottom:0.6rem;">
-        <strong style="color:#8a5a20;">🔦 Pregunta de Investigación:</strong><br>
+        <strong style="color:#8a5a20;">🐙 Pregunta de Investigación:</strong><br>
         "¿Por qué los plásticos afectan a las especies marinas de la costa colombiana?"
       </div>
       <div style="margin-bottom:0.6rem;">
@@ -1633,10 +1967,10 @@ ScreenManager.register("treasure", (container) => {
         3. Comparar zonas contaminadas vs. protegidas.
       </div>
       <div style="margin-bottom:0.6rem;">
-        <strong style="color:#8a5a20;">🍺 Justificación:</strong><br>
-        <em>Teórica:</em> Aporta datos sobre microplásticos a la biología marina.<br>
-        <em>Social:</em> Beneficia a familias costeras dependientes de la pesca.<br>
-        <em>Práctica:</em> Base para políticas de protección costera.
+        <strong style="color:#8a5a20;">🏴‍☠️ Justificación:</strong><br>
+        <em>Importancia:</em> Aporta al conocimiento científico sobre el tema.<br>
+        <em>Impacto:</em> Beneficia a comunidades afectadas directamente.<br>
+        <em>Utilidad:</em> Sirve para crear programas y políticas de mejora.
       </div>
       <div style="text-align:center;margin-top:0.8rem;">
         <strong style="color:#8a5a20;">⭐ Estrellas obtenidas: ${GameProgress.get_total_stars()}/15</strong>
