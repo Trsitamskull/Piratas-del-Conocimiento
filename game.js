@@ -162,6 +162,7 @@ const ScreenManager = {
 
   async show(name) {
     await SceneTransition.fadeTo(() => {
+      _touchDropTargets = [];
       this._getScreenEls().forEach((s) => {
         s.classList.remove("active");
         s.innerHTML = "";
@@ -176,6 +177,7 @@ const ScreenManager = {
   },
 
   showImmediate(name) {
+    _touchDropTargets = [];
     this._getScreenEls().forEach((s) => {
       s.classList.remove("active");
       s.innerHTML = "";
@@ -480,16 +482,105 @@ function shuffle(arr) {
 const NO_ANIM = { animation: "none", opacity: "1", transform: "none" };
 
 /* ---------- DRAG & DROP HELPERS ---------- */
+/* Touch state shared across drag helpers */
+let _touchDragData = null;
+let _touchGhost = null;
+let _touchDropTargets = [];
+
 function makeDraggable(elem, getData) {
+  /* Desktop: HTML5 Drag API */
   elem.draggable = true;
   elem.addEventListener("dragstart", (e) => {
     e.dataTransfer.setData("text/plain", JSON.stringify(getData()));
     elem.classList.add("dragging");
   });
   elem.addEventListener("dragend", () => elem.classList.remove("dragging"));
+
+  /* Mobile: Touch events */
+  elem.addEventListener("touchstart", (e) => {
+    if (elem.style.display === "none") return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    _touchDragData = { data: getData(), sourceElem: elem };
+    elem.classList.add("dragging");
+
+    // Create visual ghost
+    _touchGhost = elem.cloneNode(true);
+    _touchGhost.className = elem.className + " touch-drag-ghost";
+    _touchGhost.classList.remove("dragging");
+    _touchGhost.style.position = "fixed";
+    _touchGhost.style.left = touch.clientX + "px";
+    _touchGhost.style.top = touch.clientY + "px";
+    _touchGhost.style.pointerEvents = "none";
+    _touchGhost.style.zIndex = "500";
+    _touchGhost.style.opacity = "0.85";
+    _touchGhost.style.transform = "translate(-50%, -50%) scale(1.05)";
+    _touchGhost.style.maxWidth = "200px";
+    document.body.appendChild(_touchGhost);
+  }, { passive: false });
+
+  elem.addEventListener("touchmove", (e) => {
+    if (!_touchGhost) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    _touchGhost.style.left = touch.clientX + "px";
+    _touchGhost.style.top = touch.clientY + "px";
+
+    // Highlight drop zone under finger
+    _touchDropTargets.forEach((t) => {
+      const rect = t.zone.getBoundingClientRect();
+      if (
+        touch.clientX >= rect.left && touch.clientX <= rect.right &&
+        touch.clientY >= rect.top && touch.clientY <= rect.bottom
+      ) {
+        t.zone.classList.add("drag-over");
+      } else {
+        t.zone.classList.remove("drag-over");
+      }
+    });
+  }, { passive: false });
+
+  elem.addEventListener("touchend", (e) => {
+    if (!_touchDragData) return;
+    elem.classList.remove("dragging");
+
+    if (_touchGhost) {
+      _touchGhost.remove();
+      _touchGhost = null;
+    }
+
+    // Find which drop target the touch ended on
+    const touch = e.changedTouches[0];
+    let dropped = false;
+    for (const t of _touchDropTargets) {
+      const rect = t.zone.getBoundingClientRect();
+      t.zone.classList.remove("drag-over");
+      if (
+        touch.clientX >= rect.left && touch.clientX <= rect.right &&
+        touch.clientY >= rect.top && touch.clientY <= rect.bottom
+      ) {
+        try {
+          t.onDrop(
+            typeof _touchDragData.data === "object"
+              ? _touchDragData.data
+              : JSON.parse(JSON.stringify(_touchDragData.data)),
+          );
+        } catch (err) {
+          console.warn("Touch drop error:", err);
+        }
+        dropped = true;
+        break;
+      }
+    }
+    _touchDragData = null;
+  });
 }
 
 function makeDropTarget(zone, onDrop) {
+  /* Register for touch system */
+  _touchDropTargets.push({ zone, onDrop });
+
+  /* Desktop: standard drag events */
   zone.addEventListener("dragover", (e) => {
     e.preventDefault();
     zone.classList.add("drag-over");

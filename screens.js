@@ -375,7 +375,7 @@ ScreenManager.register("island1", (container) => {
       flexDirection: "column",
       padding: "0.8rem",
       position: "relative",
-      overflow: "hidden",
+      overflow: "auto",
     },
   });
 
@@ -720,7 +720,7 @@ ScreenManager.register("island2", (container) => {
       flexDirection: "column",
       padding: "0.8rem",
       position: "relative",
-      overflow: "hidden",
+      overflow: "auto",
     },
   });
 
@@ -806,7 +806,8 @@ ScreenManager.register("island2", (container) => {
 
   // Drop zones
   const zonesRow = el("div", {
-    style: { display: "flex", gap: "0.5rem", flex: "1" },
+    className: "responsive-row",
+    style: { flex: "1" },
   });
   const zoneElements = {};
 
@@ -1036,9 +1037,8 @@ ScreenManager.register("island3", (container) => {
   );
 
   const leversRow = el("div", {
+    className: "responsive-row",
     style: {
-      display: "flex",
-      gap: "0.8rem",
       marginTop: "0.8rem",
       width: "100%",
       maxWidth: "700px",
@@ -1062,6 +1062,18 @@ ScreenManager.register("island3", (container) => {
       if (!completed && !btn.classList.contains("wrong")) {
         questionDisplay.textContent = "";
       }
+    });
+    /* On touch devices, long-press to preview question */
+    let _touchTimer = null;
+    btn.addEventListener("touchstart", () => {
+      _touchTimer = setTimeout(() => {
+        if (!completed && !btn.classList.contains("wrong")) {
+          questionDisplay.textContent = lv.question;
+        }
+      }, 300);
+    }, { passive: true });
+    btn.addEventListener("touchend", () => {
+      clearTimeout(_touchTimer);
     });
 
     btn.addEventListener("click", () => {
@@ -1143,7 +1155,7 @@ ScreenManager.register("island3", (container) => {
     },
     {
       name: "🐙 Ojo del Kraken",
-      text: "Pasa el cursor sobre cada palanca para ver la pregunta, luego elige la correcta.",
+      text: "Mantén presionada una palanca para ver la pregunta, luego tócala para elegirla.",
     },
   ]);
 });
@@ -1161,11 +1173,10 @@ ScreenManager.register("island4", (container) => {
   );
 
   const content = el("div", {
+    className: "responsive-cols",
     style: {
       flex: "1",
-      display: "flex",
       padding: "0.8rem",
-      gap: "1rem",
       position: "relative",
     },
   });
