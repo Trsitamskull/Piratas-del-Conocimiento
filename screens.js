@@ -206,6 +206,28 @@ ScreenManager.register("worldmap", (container) => {
   );
   container.appendChild(header);
 
+  // Progress bar + rank
+  const progressBar = el("div", { className: "progress-bar-container" });
+  const rank = GameProgress.get_rank();
+  progressBar.appendChild(
+    el("span", {
+      className: "rank-badge",
+      textContent: `${rank.icon} ${rank.name}`,
+    }),
+  );
+  const track = el("div", { className: "progress-bar-track" });
+  const fill = el("div", { className: "progress-bar-fill" });
+  fill.style.width = Math.round((totalStars / 15) * 100) + "%";
+  track.appendChild(fill);
+  progressBar.appendChild(track);
+  progressBar.appendChild(
+    el("span", {
+      className: "progress-label",
+      textContent: `★ ${totalStars}/15`,
+    }),
+  );
+  container.appendChild(progressBar);
+
   // Map area (relative container)
   const mapArea = el("div", { style: { flex: "1", position: "relative" } });
 
@@ -222,6 +244,7 @@ ScreenManager.register("worldmap", (container) => {
       });
       dot.style.left = (p1.x + (p2.x - p1.x) * t) * 100 + "%";
       dot.style.top = (p1.y + (p2.y - p1.y) * t) * 100 + "%";
+      dot.style.setProperty("--dot-delay", (i * 8 + d) * 0.15 + "s");
       mapArea.appendChild(dot);
     }
   }
@@ -627,6 +650,7 @@ ScreenManager.register("island1", (container) => {
     `;
 
     AudioManager.playSFX("complete");
+    createConfetti(container);
     feedback.className = "feedback gold";
     feedback.textContent = "🧭✨ ¡Título de investigación construido!";
 
@@ -678,6 +702,7 @@ ScreenManager.register("island1", (container) => {
 /* ======================== ISLAND 2 – Cueva de los Condenados (Problem) ======================== */
 ScreenManager.register("island2", (container) => {
   container.className = "screen active bg-cave";
+  createDust(container, 20);
   AudioManager.playMusic("island");
 
   container.appendChild(
@@ -884,6 +909,7 @@ ScreenManager.register("island2", (container) => {
       ],
       () => {
         AudioManager.playSFX("complete");
+        createConfetti(container);
         GameProgress.complete_island(1);
         ScreenManager.show("worldmap");
       },
@@ -1047,6 +1073,13 @@ ScreenManager.register("island3", (container) => {
         feedback.textContent = "¡Correcto! El faro se enciende.";
         questionDisplay.textContent = lv.question;
         AudioManager.playSFX("correct");
+        showFloatingText(
+          container,
+          "+★ ¡Correcto!",
+          btn.offsetLeft,
+          btn.offsetTop,
+          true,
+        );
 
         faroImg.src = "assets/sprites/objects/faro_encendido.png";
         lightBeam.classList.add("on");
@@ -1068,6 +1101,7 @@ ScreenManager.register("island3", (container) => {
           ],
           () => {
             AudioManager.playSFX("complete");
+            createConfetti(container);
             GameProgress.complete_island(2);
             ScreenManager.show("worldmap");
           },
@@ -1116,6 +1150,7 @@ ScreenManager.register("island3", (container) => {
 /* ======================== ISLAND 4 – Peldaños Malditos (Objectives) ======================== */
 ScreenManager.register("island4", (container) => {
   container.className = "screen active bg-fortress";
+  createLeaves(container, 10);
   AudioManager.playMusic("island");
 
   container.appendChild(
@@ -1339,6 +1374,13 @@ ScreenManager.register("island4", (container) => {
         feedback.className = "feedback correct";
         feedback.textContent = "¡Orden correcto! La puerta se abre.";
         AudioManager.playSFX("correct");
+        showFloatingText(
+          container,
+          "+★ ¡Puerta abierta!",
+          verifyBtn.offsetLeft,
+          verifyBtn.offsetTop,
+          true,
+        );
         stepZones.forEach((sz) => sz.classList.add("correct"));
         verifyBtn.disabled = true;
 
@@ -1364,6 +1406,7 @@ ScreenManager.register("island4", (container) => {
           ],
           () => {
             AudioManager.playSFX("complete");
+            createConfetti(container);
             GameProgress.complete_island(3);
             ScreenManager.show("worldmap");
           },
@@ -1420,6 +1463,7 @@ ScreenManager.register("island4", (container) => {
 /* ======================== ISLAND 5 – Puerto del Ron Sangriento (Justification) ======================== */
 ScreenManager.register("island5", (container) => {
   container.className = "screen active bg-tavern";
+  createEmbers(container, 15);
   AudioManager.playMusic("island");
 
   container.appendChild(
@@ -1670,6 +1714,7 @@ ScreenManager.register("island5", (container) => {
       });
 
       AudioManager.playSFX("complete");
+      createConfetti(container);
       feedback.className = "feedback gold";
       feedback.textContent =
         "🏴‍☠️✨ ¡Justificación perfecta! Todos los piratas están convencidos.";
@@ -1809,6 +1854,7 @@ ScreenManager.register("treasure", (container) => {
     if (opened) return;
     opened = true;
     AudioManager.playSFX("complete");
+    createConfetti(container, 60);
 
     // Flash effect
     const flash = el("div", { className: "golden-flash" });
@@ -1881,7 +1927,7 @@ ScreenManager.register("treasure", (container) => {
 
     // Scroll with summary
     const scroll = el("div", {
-      className: "panel-parchment",
+      className: "panel-parchment scroll-unroll",
       style: {
         maxWidth: "700px",
         maxHeight: "280px",
@@ -1918,6 +1964,7 @@ ScreenManager.register("treasure", (container) => {
       </div>
       <div style="text-align:center;margin-top:0.8rem;">
         <strong style="color:#8a5a20;">⭐ Estrellas obtenidas: ${GameProgress.get_total_stars()}/15</strong>
+        <br><span style="font-size:0.85rem;color:#6a5020;">${GameProgress.get_rank().icon} Rango: ${GameProgress.get_rank().name}</span>
       </div>
     `;
     content.appendChild(scroll);

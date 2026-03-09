@@ -57,6 +57,16 @@ const GameProgress = {
     return this.islands_completed.every((c) => c);
   },
 
+  get_rank() {
+    const s = this.get_total_stars();
+    if (s >= 14) return { name: "Almirante Supremo", icon: "👑" };
+    if (s >= 11) return { name: "Capitán Legendario", icon: "🏴‍☠️" };
+    if (s >= 8) return { name: "Navegante Intrépido", icon: "⚓" };
+    if (s >= 5) return { name: "Marinero Audaz", icon: "⛵" };
+    if (s >= 1) return { name: "Grumete Novato", icon: "🪣" };
+    return { name: "Polizón", icon: "🐀" };
+  },
+
   reset() {
     this.fragments_collected = 0;
     this.islands_completed = [false, false, false, false, false];
@@ -318,6 +328,98 @@ function createWaves(container, count = 8) {
     w.style.animationDuration = 3 + Math.random() * 2 + "s";
     container.appendChild(w);
   }
+}
+
+/* ---------- CONFETTI ---------- */
+function createConfetti(container, count = 40) {
+  const colors = [
+    "#ffd700",
+    "#ff6b6b",
+    "#4ecdc4",
+    "#45b7d1",
+    "#f9ca24",
+    "#ff9ff3",
+    "#54a0ff",
+  ];
+  const wrapper = document.createElement("div");
+  wrapper.className = "stars-container";
+  wrapper.style.zIndex = "300";
+  for (let i = 0; i < count; i++) {
+    const c = document.createElement("div");
+    c.className = "confetti-particle";
+    c.style.left = 40 + Math.random() * 20 + "%";
+    c.style.top = 30 + Math.random() * 10 + "%";
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.setProperty("--fall-dur", 1.5 + Math.random() * 1.5 + "s");
+    c.style.setProperty("--fall-y", 200 + Math.random() * 300 + "px");
+    c.style.setProperty("--drift-x", (Math.random() - 0.5) * 200 + "px");
+    c.style.setProperty("--spin", Math.random() * 720 - 360 + "deg");
+    c.style.setProperty("--delay", Math.random() * 0.4 + "s");
+    c.style.width = 5 + Math.random() * 6 + "px";
+    c.style.height = 4 + Math.random() * 5 + "px";
+    wrapper.appendChild(c);
+  }
+  container.appendChild(wrapper);
+  setTimeout(() => wrapper.remove(), 3500);
+}
+
+/* ---------- AMBIENT PARTICLES ---------- */
+function createDust(container, count = 20) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "stars-container";
+  for (let i = 0; i < count; i++) {
+    const d = document.createElement("div");
+    d.className = "dust-particle";
+    d.style.left = Math.random() * 100 + "%";
+    d.style.top = 30 + Math.random() * 60 + "%";
+    d.style.setProperty("--dur", 5 + Math.random() * 5 + "s");
+    d.style.setProperty("--delay", Math.random() * 6 + "s");
+    wrapper.appendChild(d);
+  }
+  container.appendChild(wrapper);
+}
+
+function createEmbers(container, count = 15) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "stars-container";
+  for (let i = 0; i < count; i++) {
+    const e = document.createElement("div");
+    e.className = "ember-particle";
+    e.style.left = 20 + Math.random() * 60 + "%";
+    e.style.bottom = "5%";
+    e.style.setProperty("--dur", 3 + Math.random() * 3 + "s");
+    e.style.setProperty("--delay", Math.random() * 4 + "s");
+    e.style.setProperty("--drift", (Math.random() - 0.5) * 30 + "px");
+    wrapper.appendChild(e);
+  }
+  container.appendChild(wrapper);
+}
+
+function createLeaves(container, count = 10) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "stars-container";
+  for (let i = 0; i < count; i++) {
+    const l = document.createElement("div");
+    l.className = "leaf-particle";
+    l.style.left = Math.random() * 100 + "%";
+    l.style.top = "-10px";
+    l.style.setProperty("--dur", 6 + Math.random() * 4 + "s");
+    l.style.setProperty("--delay", Math.random() * 8 + "s");
+    l.style.setProperty("--drift", (Math.random() - 0.5) * 60 + "px");
+    wrapper.appendChild(l);
+  }
+  container.appendChild(wrapper);
+}
+
+/* ---------- FLOATING SCORE TEXT ---------- */
+function showFloatingText(container, text, x, y, positive = true) {
+  const ft = document.createElement("div");
+  ft.className = "floating-score " + (positive ? "positive" : "negative");
+  ft.textContent = text;
+  ft.style.left = x + "px";
+  ft.style.top = y + "px";
+  container.appendChild(ft);
+  setTimeout(() => ft.remove(), 1300);
 }
 
 /* ---------- HELPERS ---------- */
