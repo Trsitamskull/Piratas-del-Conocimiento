@@ -2462,3 +2462,13 @@ const _themeMap = new Map(THEME_DB.map((t) => [t.name, t]));
 function getThemeByName(name) {
   return _themeMap.get(name) || null;
 }
+
+/* Helper: get population-specific data for Islands 2-4.
+   Falls back to ISLANDS_EXTRA_DATA if no specific variant exists. */
+function getPopulationData(themeName, population) {
+  if (typeof POPULATION_DATA !== "undefined" && population) {
+    const key = themeName + "::" + population;
+    if (POPULATION_DATA[key]) return POPULATION_DATA[key];
+  }
+  return ISLANDS_EXTRA_DATA[themeName] || null;
+}

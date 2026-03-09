@@ -17,6 +17,7 @@ const GameProgress = {
     "Puerto del Ron\nSangriento (Justificación)",
   ],
   selected_theme: null,
+  selected_population: null,
   generated_title: null,
 
   complete_island(index) {
@@ -62,6 +63,7 @@ const GameProgress = {
     this.island_errors = [0, 0, 0, 0, 0];
     this.island_stars = [0, 0, 0, 0, 0];
     this.selected_theme = null;
+    this.selected_population = null;
     this.generated_title = null;
   },
 
@@ -72,6 +74,7 @@ const GameProgress = {
       island_errors: [...this.island_errors],
       island_stars: [...this.island_stars],
       selected_theme: this.selected_theme,
+      selected_population: this.selected_population,
       generated_title: this.generated_title,
     };
     try {
@@ -97,6 +100,7 @@ const GameProgress = {
       this.island_errors = d.island_errors || [0, 0, 0, 0, 0];
       this.island_stars = d.island_stars || [0, 0, 0, 0, 0];
       this.selected_theme = d.selected_theme || null;
+      this.selected_population = d.selected_population || null;
       this.generated_title = d.generated_title || null;
       return true;
     } catch (e) {

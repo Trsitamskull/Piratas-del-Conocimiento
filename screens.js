@@ -616,6 +616,7 @@ ScreenManager.register("island1", (container) => {
     const title = `${fenomeno.charAt(0).toUpperCase() + fenomeno.slice(1)} de ${tema.toLowerCase()} en ${poblacion.toLowerCase()}`;
 
     GameProgress.selected_theme = selectedTheme;
+    GameProgress.selected_population = poblacion;
     GameProgress.generated_title = title;
 
     titleReveal.style.display = "block";
@@ -703,7 +704,10 @@ ScreenManager.register("island2", (container) => {
 
   // Load theme from Island 1
   const themeName = GameProgress.selected_theme;
-  const themeData = themeName ? getThemeByName(themeName) : null;
+  const popName = GameProgress.selected_population;
+  const themeData =
+    themeName && popName ? getPopulationData(themeName, popName) : null;
+  const fullTitle = GameProgress.generated_title || themeName;
 
   if (!themeData || !themeData.problema) {
     feedback.className = "feedback wrong";
@@ -721,7 +725,7 @@ ScreenManager.register("island2", (container) => {
     return;
   }
 
-  feedback.textContent = `Tema: "${themeName}" — Arrastra cada frase a la categoría correcta`;
+  feedback.textContent = `Tema: "${fullTitle}" — Arrastra cada frase a la categoría correcta`;
 
   // Items data from theme
   const items = themeData.problema.items;
@@ -867,7 +871,7 @@ ScreenManager.register("island2", (container) => {
       [
         {
           name: "💀 Guardián de la Cueva",
-          text: `¡Excelente trabajo clasificando el problema sobre "${themeName}"!`,
+          text: `¡Excelente trabajo clasificando el problema sobre "${fullTitle}"!`,
         },
         {
           name: "💀 Guardián de la Cueva",
@@ -898,7 +902,7 @@ ScreenManager.register("island2", (container) => {
     },
     {
       name: "💀 Guardián de la Cueva",
-      text: `El tema es "${themeName}". Debes clasificar las frases según sean Causas, Problema Central o Consecuencias.`,
+      text: `El tema es "${fullTitle}". Debes clasificar las frases según sean Causas, Problema Central o Consecuencias.`,
     },
     {
       name: "💀 Guardián de la Cueva",
@@ -934,7 +938,10 @@ ScreenManager.register("island3", (container) => {
 
   // Load theme from Island 1
   const themeName = GameProgress.selected_theme;
-  const themeData = themeName ? getThemeByName(themeName) : null;
+  const popName = GameProgress.selected_population;
+  const themeData =
+    themeName && popName ? getPopulationData(themeName, popName) : null;
+  const fullTitle = GameProgress.generated_title || themeName;
 
   if (!themeData || !themeData.pregunta) {
     const feedback0 = el("div", {
@@ -971,7 +978,7 @@ ScreenManager.register("island3", (container) => {
 
   const feedback = el("div", {
     className: "feedback info",
-    textContent: `Tema: "${themeName}" — Elige la palanca correcta para encender el faro`,
+    textContent: `Tema: "${fullTitle}" — Elige la palanca correcta para encender el faro`,
   });
   content.appendChild(feedback);
 
@@ -1098,7 +1105,7 @@ ScreenManager.register("island3", (container) => {
     },
     {
       name: "🐙 Ojo del Kraken",
-      text: `El tema es "${themeName}". Solo la pregunta de investigación correcta puede encender el faro.`,
+      text: `El tema es "${fullTitle}". Solo la pregunta de investigación correcta puede encender el faro.`,
     },
     {
       name: "🐙 Ojo del Kraken",
@@ -1130,7 +1137,10 @@ ScreenManager.register("island4", (container) => {
 
   // Load theme from Island 1
   const themeName = GameProgress.selected_theme;
-  const themeData = themeName ? getThemeByName(themeName) : null;
+  const popName = GameProgress.selected_population;
+  const themeData =
+    themeName && popName ? getPopulationData(themeName, popName) : null;
+  const fullTitle = GameProgress.generated_title || themeName;
 
   if (!themeData || !themeData.objetivos) {
     const leftPanel = el("div", {
@@ -1182,7 +1192,7 @@ ScreenManager.register("island4", (container) => {
 
   const feedback = el("div", {
     className: "feedback info",
-    textContent: `Tema: "${themeName}" — Arrastra las llaves a los escalones en el orden correcto`,
+    textContent: `Tema: "${fullTitle}" — Arrastra las llaves a los escalones en el orden correcto`,
   });
   leftPanel.appendChild(feedback);
 
@@ -1279,8 +1289,17 @@ ScreenManager.register("island4", (container) => {
       e.preventDefault();
       zone.classList.remove("drag-over");
       const keyId = parseInt(e.dataTransfer.getData("text/plain"));
+      if (isNaN(keyId)) return;
 
-      // Remove key from any previous step
+      // If this step already has a different key, return it to the bank
+      if (stepContents[i] !== null && stepContents[i] !== keyId) {
+        const oldKeyEl = keysContainer.querySelector(
+          `[data-key-id="${stepContents[i]}"]`,
+        );
+        if (oldKeyEl) oldKeyEl.style.display = "";
+      }
+
+      // Remove this key from any previous step it was in
       for (let s = 0; s < 3; s++) {
         if (stepContents[s] === keyId) {
           stepContents[s] = null;
@@ -1332,7 +1351,7 @@ ScreenManager.register("island4", (container) => {
           [
             {
               name: "🪜 Guardián de los Peldaños",
-              text: `¡La puerta se ha abierto! Has ordenado los objetivos sobre "${themeName}" correctamente.`,
+              text: `¡La puerta se ha abierto! Has ordenado los objetivos sobre "${fullTitle}" correctamente.`,
             },
             {
               name: "🪜 Guardián de los Peldaños",
@@ -1389,7 +1408,7 @@ ScreenManager.register("island4", (container) => {
     },
     {
       name: "🪜 Guardián de los Peldaños",
-      text: `El tema es "${themeName}". Cada llave representa un objetivo. Arrástralas a los escalones en el orden lógico.`,
+      text: `El tema es "${fullTitle}". Cada llave representa un objetivo. Arrástralas a los escalones en el orden lógico.`,
     },
     {
       name: "🪜 Guardián de los Peldaños",
@@ -1428,6 +1447,7 @@ ScreenManager.register("island5", (container) => {
   // Load theme from Island 1
   const themeName = GameProgress.selected_theme;
   const themeData = themeName ? getThemeByName(themeName) : null;
+  const fullTitle = GameProgress.generated_title || themeName;
 
   if (!themeData) {
     feedback.className = "feedback wrong";
@@ -1448,17 +1468,17 @@ ScreenManager.register("island5", (container) => {
   // === STATE ===
   const rounds = [
     {
-      question: `¿Por qué es importante investigar sobre "${themeName}"?`,
+      question: `¿Por qué es importante investigar sobre "${fullTitle}"?`,
       expectedType: "importancia",
       pirate: 0,
     },
     {
-      question: `¿A quién afecta "${themeName}" o por qué es un problema actual?`,
+      question: `¿A quién afecta "${fullTitle}" o por qué es un problema actual?`,
       expectedType: "impacto",
       pirate: 1,
     },
     {
-      question: `¿Para qué serviría investigar "${themeName}"?`,
+      question: `¿Para qué serviría investigar "${fullTitle}"?`,
       expectedType: "utilidad",
       pirate: 0,
     },
@@ -1716,7 +1736,7 @@ ScreenManager.register("island5", (container) => {
     [
       {
         name: "🏴‍☠️ Pirata Teórico",
-        text: `¿"${themeName}"? ¡Bah! No veo por qué alguien investigaría eso.`,
+        text: `¿"${fullTitle}"? ¡Bah! No veo por qué alguien investigaría eso.`,
       },
       {
         name: "🏴‍☠️ Pirata Indiferente",
@@ -1804,7 +1824,9 @@ ScreenManager.register("treasure", (container) => {
 
     // Build dynamic summary from theme
     const tName = GameProgress.selected_theme;
-    const tData = tName ? getThemeByName(tName) : null;
+    const tPop = GameProgress.selected_population;
+    const tData = tName ? getPopulationData(tName, tPop) : null;
+    const tThemeData = tName ? getThemeByName(tName) : null;
 
     // Problema section
     let problemaSummary = "<em>No disponible</em>";
@@ -1839,19 +1861,19 @@ ScreenManager.register("treasure", (container) => {
         .join("<br>");
     }
 
-    // Justificación section
+    // Justificación section (theme-level, not population-specific)
     let justSummary = "<em>No disponible</em>";
-    if (tData && tData.justificacion) {
+    if (tThemeData && tThemeData.justificacion) {
       const imp =
-        tData.justificacion
+        tThemeData.justificacion
           .filter((j) => j.tipo === "importancia")
           .map((j) => j.texto)[0] || "";
       const impact =
-        tData.justificacion
+        tThemeData.justificacion
           .filter((j) => j.tipo === "impacto")
           .map((j) => j.texto)[0] || "";
       const util =
-        tData.justificacion
+        tThemeData.justificacion
           .filter((j) => j.tipo === "utilidad")
           .map((j) => j.texto)[0] || "";
       justSummary = `<em>Importancia:</em> ${imp}<br><em>Impacto:</em> ${impact}<br><em>Utilidad:</em> ${util}`;
