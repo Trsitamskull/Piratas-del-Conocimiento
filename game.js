@@ -497,48 +497,58 @@ function makeDraggable(elem, getData) {
   elem.addEventListener("dragend", () => elem.classList.remove("dragging"));
 
   /* Mobile: Touch events */
-  elem.addEventListener("touchstart", (e) => {
-    if (elem.style.display === "none") return;
-    e.preventDefault();
-    const touch = e.touches[0];
-    _touchDragData = { data: getData(), sourceElem: elem };
-    elem.classList.add("dragging");
+  elem.addEventListener(
+    "touchstart",
+    (e) => {
+      if (elem.style.display === "none") return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      _touchDragData = { data: getData(), sourceElem: elem };
+      elem.classList.add("dragging");
 
-    // Create visual ghost
-    _touchGhost = elem.cloneNode(true);
-    _touchGhost.className = elem.className + " touch-drag-ghost";
-    _touchGhost.classList.remove("dragging");
-    _touchGhost.style.position = "fixed";
-    _touchGhost.style.left = touch.clientX + "px";
-    _touchGhost.style.top = touch.clientY + "px";
-    _touchGhost.style.pointerEvents = "none";
-    _touchGhost.style.zIndex = "500";
-    _touchGhost.style.opacity = "0.85";
-    _touchGhost.style.transform = "translate(-50%, -50%) scale(1.05)";
-    _touchGhost.style.maxWidth = "200px";
-    document.body.appendChild(_touchGhost);
-  }, { passive: false });
+      // Create visual ghost
+      _touchGhost = elem.cloneNode(true);
+      _touchGhost.className = elem.className + " touch-drag-ghost";
+      _touchGhost.classList.remove("dragging");
+      _touchGhost.style.position = "fixed";
+      _touchGhost.style.left = touch.clientX + "px";
+      _touchGhost.style.top = touch.clientY + "px";
+      _touchGhost.style.pointerEvents = "none";
+      _touchGhost.style.zIndex = "500";
+      _touchGhost.style.opacity = "0.85";
+      _touchGhost.style.transform = "translate(-50%, -50%) scale(1.05)";
+      _touchGhost.style.maxWidth = "200px";
+      document.body.appendChild(_touchGhost);
+    },
+    { passive: false },
+  );
 
-  elem.addEventListener("touchmove", (e) => {
-    if (!_touchGhost) return;
-    e.preventDefault();
-    const touch = e.touches[0];
-    _touchGhost.style.left = touch.clientX + "px";
-    _touchGhost.style.top = touch.clientY + "px";
+  elem.addEventListener(
+    "touchmove",
+    (e) => {
+      if (!_touchGhost) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      _touchGhost.style.left = touch.clientX + "px";
+      _touchGhost.style.top = touch.clientY + "px";
 
-    // Highlight drop zone under finger
-    _touchDropTargets.forEach((t) => {
-      const rect = t.zone.getBoundingClientRect();
-      if (
-        touch.clientX >= rect.left && touch.clientX <= rect.right &&
-        touch.clientY >= rect.top && touch.clientY <= rect.bottom
-      ) {
-        t.zone.classList.add("drag-over");
-      } else {
-        t.zone.classList.remove("drag-over");
-      }
-    });
-  }, { passive: false });
+      // Highlight drop zone under finger
+      _touchDropTargets.forEach((t) => {
+        const rect = t.zone.getBoundingClientRect();
+        if (
+          touch.clientX >= rect.left &&
+          touch.clientX <= rect.right &&
+          touch.clientY >= rect.top &&
+          touch.clientY <= rect.bottom
+        ) {
+          t.zone.classList.add("drag-over");
+        } else {
+          t.zone.classList.remove("drag-over");
+        }
+      });
+    },
+    { passive: false },
+  );
 
   elem.addEventListener("touchend", (e) => {
     if (!_touchDragData) return;
@@ -556,8 +566,10 @@ function makeDraggable(elem, getData) {
       const rect = t.zone.getBoundingClientRect();
       t.zone.classList.remove("drag-over");
       if (
-        touch.clientX >= rect.left && touch.clientX <= rect.right &&
-        touch.clientY >= rect.top && touch.clientY <= rect.bottom
+        touch.clientX >= rect.left &&
+        touch.clientX <= rect.right &&
+        touch.clientY >= rect.top &&
+        touch.clientY <= rect.bottom
       ) {
         try {
           t.onDrop(

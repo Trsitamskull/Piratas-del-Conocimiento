@@ -1065,13 +1065,17 @@ ScreenManager.register("island3", (container) => {
     });
     /* On touch devices, long-press to preview question */
     let _touchTimer = null;
-    btn.addEventListener("touchstart", () => {
-      _touchTimer = setTimeout(() => {
-        if (!completed && !btn.classList.contains("wrong")) {
-          questionDisplay.textContent = lv.question;
-        }
-      }, 300);
-    }, { passive: true });
+    btn.addEventListener(
+      "touchstart",
+      () => {
+        _touchTimer = setTimeout(() => {
+          if (!completed && !btn.classList.contains("wrong")) {
+            questionDisplay.textContent = lv.question;
+          }
+        }, 300);
+      },
+      { passive: true },
+    );
     btn.addEventListener("touchend", () => {
       clearTimeout(_touchTimer);
     });
